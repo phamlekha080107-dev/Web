@@ -133,5 +133,20 @@ namespace _25DH110384_WebStore.Areas.Customer.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public ActionResult PageHome()
+        {
+            return View(db.Categories.ToList());
+        }
+
+        public ActionResult Login()
+        {
+            return View(db.Categories.ToList());
+        }
+
+        public ActionResult PageDienThoai()
+        {
+            return View(db.Categories.ToList());
+        }
     }
 }

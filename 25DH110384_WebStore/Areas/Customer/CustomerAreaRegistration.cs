@@ -2,7 +2,7 @@
 
 namespace _25DH110384_WebStore.Areas.Customer
 {
-    public class CustomerAreaRegistration : AreaRegistration
+    public class PageHomeAreaRegistration : AreaRegistration
     {
         public override string AreaName 
         {

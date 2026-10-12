@@ -1,0 +1,110 @@
+﻿@model IEnumerable<_25DH110384_WebStore.Models.Category>
+<link rel="stylesheet" href="~/Areas/Customer/Content/Index.css" />
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PHONE&ACCES - Điện thoại</title>
+
+    <link rel="stylesheet" href="~/Areas/Customer/Content/PageDienThoai.css" />
+
+</head>
+
+<body>
+
+    <div class="top-note">MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN HÀNG TỪ 500.000Đ</div>
+
+    <header class="header">
+        <a class="logo" href="#">PHONE & ACCES</a>
+        <div class="header-right">
+            <span>♡ Yêu thích</span>
+            <a href="#cart">🛒 Giỏ hàng <b id="cart-count">0</b></a>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <a href="@Url.Action("PageHome", "Categories1", new { area = "Customer" })">TRANG CHỦ</a>
+        <a href="#">ĐIỆN THOẠI</a>
+        <a href="#products">PHỤ KIỆN</a>
+        <a href="#featured">THIẾT BỊ ĐEO THÔNG MINH</a>
+        <a href="#footer">THÔNG TIN HỖ TRỢ</a>
+    </nav>
+
+    <section class="phone-banner">
+        <div>
+            <p>SẢN PHẨM MỚI</p>
+            <h1>SMART PHONE</h1>
+            <p>Khám phá những mẫu điện thoại hiện đại nhất.</p>
+        </div>
+    </section>
+
+    <main class="phone-container">
+
+        <h2 class="phone-title">DANH SÁCH ĐIỆN THOẠI</h2>
+
+        <div class="phone-tools">
+            <input type="text"
+                   id="searchPhone"
+                   placeholder="Tìm tên điện thoại..."
+                   oninput="searchPhone()" />
+
+            <select id="sortPhone" onchange="sortPhone()">
+                <option value="default">Sắp xếp sản phẩm</option>
+                <option value="asc">Giá thấp đến cao</option>
+                <option value="desc">Giá cao đến thấp</option>
+            </select>
+        </div>
+
+        <div class="phone-grid" id="phoneList">
+
+            <div class="phone-card" data-price="22340000">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ_YUQhhH_m5_FZaFwRI1Zwv_DSSm7QosdQx4hymfVyw&s0"
+                     alt="iPhone 16" />
+                <h3>iPhone 16</h3>
+                <p class="phone-price">22.340.000đ</p>
+                <button onclick="addPhone()">Thêm vào giỏ</button>
+            </div>
+
+            <div class="phone-card" data-price="16490000">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6G0p27AF9qTeUFv-wx2a2Fc_Ir7OTvytZLtHqafibPg&s=10"
+                     alt="Samsung Galaxy 24" />
+                <h3>Samsung Galaxy S24</h3>
+                <p class="phone-price">16.490.000đ</p>
+                <button onclick="addPhone()">Thêm vào giỏ</button>
+            </div>
+
+            <div class="phone-card" data-price="12990000">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSW4dBp8SWJ75yTlQkIrMA7njJcinDl84uNFRLYg06pzQ&s=10"
+                     alt="Xiaomi 15" />
+                <h3>Xiaomi 15</h3>
+                <p class="phone-price">12.990.000đ</p>
+                <button onclick="addPhone()">Thêm vào giỏ</button>
+            </div>
+
+            <div class="phone-card" data-price="26200000">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZPyjtGyBKPADi1rkBOI80AKngnE3Dc5gDj-jaaOtV_A&s=10"
+                     alt="OPPO Find X9 Pro" />
+                <h3>OPPO Find X9 Pro</h3>
+                <p class="phone-price">26.200.000</p>
+                <button onclick="addPhone()">Thêm vào giỏ</button>
+            </div>
+
+            
+
+        </div>
+    </main>
+
+    <footer class="phone-footer">
+        <h2>PHONE&ACCES</h2>
+        <p>Điện thoại và phụ kiện công nghệ dành cho bạn.</p>
+    </footer>
+
+    
+
+</body>
+</html>
