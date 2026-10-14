@@ -246,6 +246,7 @@
     <Content Include="Areas\Customer\Views\Categories1\PageHome.cshtml" />
     <Content Include="Areas\Customer\Views\Categories1\PageDienThoai.cshtml" />
     <Content Include="Areas\Customer\Views\Categories1\Login.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\PVProdInfo.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
