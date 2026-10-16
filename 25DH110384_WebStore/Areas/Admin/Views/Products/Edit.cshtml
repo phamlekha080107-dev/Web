@@ -10,7 +10,7 @@
 
 @using (Html.BeginForm())
 {
-        @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
 
 
 
@@ -21,9 +21,10 @@
 
         @Html.Partial("PVCreateEditProduct", Model)
     </div>
- }
+}
 
 
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

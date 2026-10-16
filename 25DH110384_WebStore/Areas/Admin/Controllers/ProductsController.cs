@@ -7,18 +7,73 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using _25DH110384_WebStore.Models;
+using _25DH110384_WebStore.Models.ViewModel;
+using Microsoft.Ajax.Utilities;
 
-namespace _25DH110384_WebStore.Areas.Admin.Views
+namespace _25DH110384_WebStore.Areas.Admin.Controllers
 {
     public class ProductsController : Controller
     {
         private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
 
         // GET: Admin/Products
-        public ActionResult Index()
+        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder)
         {
-            var products = db.Products.Include(p => p.Category);
-            return View(products.ToList());
+            var model = new ProductSearchVM();
+            var products = db.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                model.SearchTerm = searchTerm;
+                products = products.Where(p =>
+                        p.ProductName.Contains(searchTerm) ||
+                        p.ProductDescription.Contains(searchTerm) ||
+                        p.Category.CategoryName.Contains(searchTerm));
+
+            }
+
+            if (minPrice.HasValue)
+            {
+                model.MinPrice = minPrice.Value;
+                products = products.Where(p=> p.ProductPrice >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                model.MaxPrice = maxPrice.Value;
+                products = products.Where(p => p.ProductPrice >= maxPrice.Value);
+            }
+
+            // Áp dụng sắp xếp dựa trên lựa chọn của người dùng
+            switch (sortOrder)
+            {
+                case "name_asc":
+                    products = products.OrderBy(p => p.ProductName);
+                    break;
+
+                case "name_desc":
+                    products = products.OrderByDescending(p => p.ProductName);
+                    break;
+
+                case "price_asc":
+                    products = products.OrderBy(p => p.ProductPrice);
+                    break;
+
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.ProductPrice);
+                    break;
+
+                default: // Mặc định sắp xếp theo tên
+                    products = products.OrderBy(p => p.ProductName);
+                    break;
+            }
+            model.SortOrder = sortOrder;
+
+            model.Products = products.ToList();
+            return View(model);
+
+            //var products = db.Products.Include(p => p.Category);
+            //return View(products.ToList());
         }
 
         // GET: Admin/Products/Details/5
