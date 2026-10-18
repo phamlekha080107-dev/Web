@@ -177,6 +177,7 @@
       <DependentUpon>QuanLiKhachHangModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel\HomeProductVM.cs" />
+    <Compile Include="Models\ViewModel\ProductDetailVM.cs" />
     <Compile Include="Models\ViewModel\ProductSearchVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -253,6 +254,8 @@
     <Content Include="Areas\Admin\Views\Products\PVListProduct.cshtml" />
     <Content Include="Areas\Customer\Views\Categories1\PVFeatureProduct.cshtml" />
     <Content Include="Areas\Customer\Views\Categories1\PVNewProduct.cshtml" />
+    <Content Include="Areas\Customer\Views\Categories1\PVTopProduct.cshtml" />
+    <Content Include="Areas\Customer\Views\Categories1\PVRelatedProduct.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

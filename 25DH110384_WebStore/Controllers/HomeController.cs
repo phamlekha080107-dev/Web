@@ -4,6 +4,7 @@ using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
@@ -41,6 +42,40 @@ namespace _25DH110384_WebStore.Controllers
 
             return View(model);
         }
+
+        public ActionResult ProductDetails(int? id, int? quantity, int? page)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Product pro = db.Products.Find(id);
+            if (pro == null)
+            {
+                return HttpNotFound();
+            }
+
+            // lấy tất cả các sản phẩm cùng danh mục
+            var products = db.Products.Where(p => p.CategoryID == pro.CategoryID && p.ProductID != pro.ProductID).AsQueryable();
+
+            ProductDetailVM model = new ProductDetailVM();
+
+            // Đoạn code liên quan tới phân trang
+            // Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
+            int pageNumber = page ?? 1;
+            int pageSize = model.PageSize; // Số sản phẩm mỗi trang
+            model.product = pro;
+            model.RelatedProducts = products.OrderBy(p => p.ProductID).Take(8).ToPagedList(pageNumber, pageSize).ToList();
+            model.TopProducts = products.OrderByDescending(p => p.OrderDetails.Count()).Take(8).ToPagedList(pageNumber, pageSize);
+
+            if (quantity.HasValue)
+            {
+                model.quantity = quantity.Value;
+            }
+
+            return View(model);
+        }
+
 
         public ActionResult About()
         {
