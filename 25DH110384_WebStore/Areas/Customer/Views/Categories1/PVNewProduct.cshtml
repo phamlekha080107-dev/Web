@@ -1,0 +1,42 @@
+﻿@model _25DH110384_WebStore.Models.ViewModel.HomeProductVM
+@using PagedList.Mvc;
+<link rel="stylesheet" href="~/Areas/Customer/Content/PageHome.css" />
+
+@if (Model.NewProducts != null && Model.NewProducts.Any())
+{
+    <section class="container-fluid listProduct">
+        <div class="section-heading"><span></span><span></span><h2>SẢN PHẨM KHÁC</h2><span></span><span></span></div>
+        <div class="tools">
+            <p>Những sản phẩm mới nhất</p>
+            <input id="search-input" type="search" placeholder="Tìm sản phẩm..." oninput="searchProducts()">
+        </div>
+        <div class="products" id="product-list">
+            @foreach (var product in Model.NewProducts)
+            {
+                <div class="lproduct-item">
+                    <div>
+                        <a href="@Url.Action("ProductDetail", "Home", new { id = product.ProductID })">
+                            <img src="@Html.DisplayFor(modelItem => product.ProductImage)" />
+                        </a>
+                    </div>
+                    <div>
+                        <p class="prodPrice">@Html.DisplayFor(modelItem => product.ProductPrice)</p>
+                        <p class="prodName">@Html.DisplayFor(modelItem => product.ProductName)</p>
+                        <p class="prodSale">
+                            Đã bán:&nbsp;@Html.DisplayFor(modelItem => product.OrderDetails.Count)
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section> <!-- <-- THÊM THẺ ĐÓNG NÀY VÀO -->
+
+    <!-- Hiển thị phân trang -->
+    <div class="pagination-container">
+        @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
+    </div>
+}
+else
+{
+    <p>Không tìm được sản phẩm nào phù hợp.</p>
+}

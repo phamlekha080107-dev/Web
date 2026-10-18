@@ -1,36 +1,60 @@
-﻿@model IEnumerable<_25DH110384_WebStore.Models.Category>
+﻿@model _25DH110384_WebStore.Models.ViewModel.HomeProductVM
+
 <link rel="stylesheet" href="~/Areas/Customer/Content/Index.css" />
 
 @{
-    ViewBag.Title = "Index";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    Layout = null;
+
 }
 
-<h2 class="bg-success">DANH SÁCH DANH MỤC</h2>
+<div> class="top-note">MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN HÀNG TỪ 500.000Đ</div>
 
-<p>
-    @Html.ActionLink("Thêm mới", "Create", null, new { @class = "customer-btn" })
-</p>
-<table class="table bg-info col-lg-8 col-md-6 col-sm-3">
-    <tr>
-        <th class="bg-success col-lg-5 col-md-4 col-sm-2">
-            @*@Html.DisplayNameFor(model => model.CategoryName)*@
-            Tên Danh Mục
-        </th>
-        <th class="bg-success col-lg-3 col-md-2 col-sm-1"></th>
-    </tr>
+<header class="header">
+    <a class="logo" href="#">PHONE & ACCES</a>
+    <div class="header-right">
+        <input /> id="search-input" type="search"
+        placeholder="Tìm sản phẩm..."
+        @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+        {
+            <div class="form-group search-container">   
+                @Html.TextBoxFor(m => m.SearchTerm, new
+           {
+               @class = "search-input",
+               placeholder = "Nhập tên, mô tả hoặc chủng loại sản phẩm"
+           })
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.ActionLink("Cập nhật", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })
-                @Html.ActionLink("Xóa", "Delete", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })
-            </td>
-        </tr>
-    }
+                <button type="submit" class="search-button">Tìm kiếm</button>
+            </div>
+        }
+        <span>♡ Yêu thích</span>
+        <a href="#cart">🛒 Giỏ hàng <b id="cart-count">0</b></a>
+        <a href="@Url.Action("Login", "Categories1", new { area = "Customer" })">
+            Đăng nhập
+        </a>
+    </div>
+</header>
 
-</table>
+<nav class="navbar">
+    <a href="#">TRANG CHỦ</a>
+    <a href="@Url.Action("PageDienThoai", "Categories1", new { area = "Customer" })">ĐIỆN THOẠI</a>
+    <a href="#products">PHỤ KIỆN</a>
+    <a href="#featured">THIẾT BỊ ĐEO THÔNG MINH</a>
+    <a href="#footer">THÔNG TIN HỖ TRỢ</a>
+</nav>
+
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">SẢN PHẨM MỚI</p>
+        <h1>SMART PHONE</h1>
+        <span class="small-line"></span>
+        <p>Thiết kế nổi bật, hiện đại cho mỗi ngày.</p>
+        <a class="btn" href="#products">KHÁM PHÁ NGAY&nbsp; →</a>
+    </div>
+
+</section>
+@* San pham noi bat *@
+@Html.Partial("PVFeatureProduct", Model)
+
+@* San pham noi bat *@
+@Html.Partial("PVNewProduct", Model)
+

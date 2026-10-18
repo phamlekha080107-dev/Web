@@ -1,0 +1,37 @@
+﻿@model _25DH110384_WebStore.Models.ViewModel.HomeProductVM
+
+<link rel="stylesheet" type="text/css" href="~/Areas/Customer/Content/PageHome.css">
+
+@if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
+{
+    <section id="featured" class="section">
+        <div class="section-heading"><span></span><h2>SẢN PHẨM NỔI BẬT</h2><span></span></div>
+        <div class="products">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <div class="fproduct-item">
+                    <div>
+                        <a href="@Url.Action("ProductDetail", "Home", new { id = product.ProductID })">
+                            <img src="@Html.DisplayFor(modelItem => product.ProductImage)" />
+                        </a>
+                    </div>
+                    <div>
+                        <p class="prodPrice">
+                            @Html.DisplayFor(modelItem => product.ProductPrice)
+                        </p>
+                        <p class="prodName">
+                            @Html.DisplayFor(modelItem => product.ProductName)
+                        </p>
+                        <p class="prodCate">
+                            @Html.DisplayFor(modelItem => product.Category.CategoryName)
+                        </p>
+                        <p class="prodSale">
+                            Đã bán:&nbsp; @Html.DisplayFor(modelItem => product.OrderDetails.Count)
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+    <hr />
+}

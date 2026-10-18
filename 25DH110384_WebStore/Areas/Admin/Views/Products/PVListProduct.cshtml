@@ -1,4 +1,5 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.ProductSearchVM
+@using PagedList.Mvc;
 <head>
     <style>
         img {
@@ -40,6 +41,10 @@
             }
         </tbody>
     </table>
+    <!-- Hiển thị phân trang -->
+    <div class="pagination-container">
+        @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }))
+    </div>
 }
 else
 {

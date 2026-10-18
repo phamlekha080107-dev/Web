@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<_25DH110384_WebStore.Models.Category>
-<link rel="stylesheet" href="~/Areas/Customer/Content/Index.css" />
+<link rel="stylesheet" href="~/Areas/Customer/Content/PageHome.css" />
 
 @{
     Layout = null;
@@ -23,6 +23,9 @@
     <header class="header">
         <a class="logo" href="#">PHONE & ACCES</a>
         <div class="header-right">
+            <input id="search-input" type="search"
+                   placeholder="Tìm sản phẩm..."
+                   oninput="searchProducts()">
             <span>♡ Yêu thích</span>
             <a href="#cart">🛒 Giỏ hàng <b id="cart-count">0</b></a>
             <a href="@Url.Action("Login", "Categories1", new { area = "Customer" })">
@@ -47,16 +50,17 @@
             <p>Thiết kế nổi bật, hiện đại cho mỗi ngày.</p>
             <a class="btn" href="#products">KHÁM PHÁ NGAY&nbsp; →</a>
         </div>
+        
     </section>
 
     <main class="container">
-        <section class="categories" id="categories">
+        <section class="categories" id="categories">    
             <a class="category category-one" href="#products"><span>ĐIỆN THOẠI</span></a>
             <a class="category category-two" href="#products"><span>PHỤ KIỆN</span></a>
             <a class="category category-three" href="#products"><span>THIẾT BỊ ĐEO THÔNG MINH</span></a>
         </section>
 
-        <section id="featured" class="section">
+        @*<section id="featured" class="section">
             <div class="section-heading"><span></span><h2>SẢN PHẨM NỔI BẬT</h2><span></span></div>
             <div class="products">
                 <article class="product">
@@ -80,9 +84,9 @@
                     <button onclick="addToCart()">Thêm vào giỏ</button>
                 </article>
             </div>
-        </section>
+        </section>*@
 
-        <section id="products" class="section">
+        @*<section id="products" class="section">
             <div class="section-heading"><span></span><h2>SẢN PHẨM KHÁC</h2><span></span></div>
             <div class="tools">
                 <p>Những sản phẩm mới nhất</p>
@@ -107,14 +111,14 @@
                 </article>
             </div>
             <p id="no-result" class="no-result" hidden>Không tìm thấy sản phẩm phù hợp.</p>
-        </section>
+        </section>*@
     </main>
 
-    <footer id="footer">
+    @*<footer id="footer">
         <div class="footer-logo">PHONE & ACCES</div>
         <p>Thế giới công nghệ tiện ích</p>
         <p>© 2026 PHONE & ACCES</p>
     </footer>
-    <script src="script.js"></script>
+    <script src="script.js"></script>*@
 </body>
 </html>

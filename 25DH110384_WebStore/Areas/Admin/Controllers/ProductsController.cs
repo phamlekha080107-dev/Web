@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using _25DH110384_WebStore.Models;
 using _25DH110384_WebStore.Models.ViewModel;
 using Microsoft.Ajax.Utilities;
+using PagedList;
+using PagedList.Mvc;
 
 namespace _25DH110384_WebStore.Areas.Admin.Controllers
 {
@@ -17,7 +19,7 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
         private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
 
         // GET: Admin/Products
-        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder)
+        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder, int? page )
         {
             var model = new ProductSearchVM();
             var products = db.Products.AsQueryable();
@@ -68,8 +70,11 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
                     break;
             }
             model.SortOrder = sortOrder;
+            // lay so trang mac dinh la 1
+            int pageNumber = page ?? 1;
+            int pageSize = 2; //so san pham moi trang
 
-            model.Products = products.ToList();
+            model.Products = products.ToPagedList(pageNumber, pageSize);
             return View(model);
 
             //var products = db.Products.Include(p => p.Category);
