@@ -7,28 +7,27 @@
 
 }
 
-<div> class="top-note">MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN HÀNG TỪ 500.000Đ</div>
+<div class="top-note">MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN HÀNG TỪ 500.000Đ</div>
 
 <header class="header">
     <a class="logo" href="#">PHONE & ACCES</a>
     <div class="header-right">
-        <input /> id="search-input" type="search"
-        placeholder="Tìm sản phẩm..."
+
         @using (Html.BeginForm("Index", "Home", FormMethod.Get))
         {
-            <div class="form-group search-container">   
+            <div class="form-group search-container">
                 @Html.TextBoxFor(m => m.SearchTerm, new
-           {
-               @class = "search-input",
-               placeholder = "Nhập tên, mô tả hoặc chủng loại sản phẩm"
-           })
-
-                <button type="submit" class="search-button">Tìm kiếm</button>
+                {
+                    @class = "search-input",
+                    @id = "search-input",
+                    @placeholder = "Tìm sản phẩm..."
+                })
+                <button type="submit" class="search-button" style="display:none;">Tìm</button>
             </div>
         }
-        <span>♡ Yêu thích</span>
-        <a href="#cart">🛒 Giỏ hàng <b id="cart-count">0</b></a>
-        <a href="@Url.Action("Login", "Categories1", new { area = "Customer" })">
+        <span class="wishlist">♡ Yêu thích</span>
+        <a href="#cart" class="cart-link">🛒 Giỏ hàng <b id="cart-count">0</b></a>
+        <a href="@Url.Action("Login", "Categories1", new { area = "Customer" })" class="login-link">
             Đăng nhập
         </a>
     </div>
@@ -50,11 +49,13 @@
         <p>Thiết kế nổi bật, hiện đại cho mỗi ngày.</p>
         <a class="btn" href="#products">KHÁM PHÁ NGAY&nbsp; →</a>
     </div>
-
 </section>
-@* San pham noi bat *@
-@Html.Partial("PVFeatureProduct", Model)
 
-@* San pham noi bat *@
-@Html.Partial("PVNewProduct", Model)
+@* Phần hiển thị các danh mục hoặc sản phẩm bên dưới banner *@
+<div class="container">
+    @* Sản phẩm nổi bật *@
+    @Html.Partial("PVFeatureProduct", Model)
 
+    @* Sản phẩm mới *@
+    @Html.Partial("PVNewProduct", Model)
+</div>
