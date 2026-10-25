@@ -9,6 +9,7 @@
 
 namespace _25DH110384_WebStore.Models
 {
+    using _25DH110384_WebStore.Models.ViewModel;
     using System;
     using System.Collections.Generic;
     
@@ -26,7 +27,7 @@ namespace _25DH110384_WebStore.Models
         public decimal TotalAmount { get; set; }
         public string PaymentStatus { get; set; }
         public string AddressDelivery { get; set; }
-    
+
         public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
