@@ -1,9 +1,10 @@
 ﻿using _25DH110384_WebStore.Models;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 
-namespace MaSV_MyStore.Areas.Admin.Controllers
+namespace _25DH110384_WebStore.Areas.Admin.Controllers
 {
     public class CustomersController : Controller
     {
@@ -24,11 +25,11 @@ namespace MaSV_MyStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
+            _25DH110384_WebStore.Models.Customer customer = db.Customers.Find(id);
             if (customer == null)
             {
                 return HttpNotFound();
-            }
+            }   
             return View(customer);
         }
 
