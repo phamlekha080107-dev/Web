@@ -72,7 +72,7 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
             model.SortOrder = sortOrder;
             // lay so trang mac dinh la 1
             int pageNumber = page ?? 1;
-            int pageSize = 2; //so san pham moi trang
+            int pageSize = 5; //so san pham moi trang
 
             model.Products = products.ToPagedList(pageNumber, pageSize);
             return View(model);

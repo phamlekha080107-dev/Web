@@ -9,7 +9,6 @@
 
 namespace _25DH110384_WebStore.Models
 {
-    using _25DH110384_WebStore.Models.ViewModel;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;

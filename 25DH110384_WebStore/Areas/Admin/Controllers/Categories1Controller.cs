@@ -118,8 +118,10 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
-        {
+        {       
             Category category = db.Categories.Find(id);
+            var products = db.Products.Where(p => p.CategoryID == id);
+            db.Products.RemoveRange(products);
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");

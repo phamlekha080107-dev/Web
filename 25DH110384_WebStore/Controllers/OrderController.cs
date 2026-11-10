@@ -120,7 +120,7 @@ namespace _25DH110384_WebStore.Controllers
 
             return View(model);
         }
-        public ActionResult OrderSuccess(int id)
+        public ActionResult OrderSuccess(int? id)
         {
             var order = db.Orders.Include("OrderDetails").SingleOrDefault(o => o.OrderID == id);
             if (order == null) {

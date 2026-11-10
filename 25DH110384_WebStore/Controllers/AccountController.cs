@@ -59,11 +59,11 @@ namespace _25DH110384_WebStore.Controllers
 
             return View(model);
         }
+        // GET: Account/Login
         public ActionResult Login()
         {
             return View();
         }
-
 
         // POST: Account/Login
         [HttpPost]
@@ -72,28 +72,41 @@ namespace _25DH110384_WebStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = db.Users.SingleOrDefault(u => u.Username == model.Username
-                            && u.Password == model.Password
-                            && u.UserRole == "Customer");
+                var user = db.Users.SingleOrDefault(u =>
+                    u.Username == model.Username &&
+                    u.Password == model.Password &&
+                    u.UserRole == "Customer"
+                );
+
                 if (user != null)
                 {
-                    // Lưu trạng thái đăng nhập vào session
+                    // Lưu thông tin đăng nhập vào Session
                     Session["Username"] = user.Username;
                     Session["UserRole"] = user.UserRole;
 
-                    // lưu thông tin xác thực người dùng vào cookie
+                    // Lưu thông tin xác thực vào Cookie
                     FormsAuthentication.SetAuthCookie(user.Username, false);
 
-                    return RedirectToAction("Index", "Home");
+                    // Chuyển đến trang chủ khách hàng
+                    return RedirectToAction(
+                        "Index",
+                        "Categories1",
+                        new { area = "Customer" }
+                    );
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                    ModelState.AddModelError(
+                        "",
+                        "Tên đăng nhập hoặc mật khẩu không đúng."
+                    );
                 }
             }
 
             return View(model);
         }
+
+
         // GET: Account/Logout
         public ActionResult Logout()
         {

@@ -23,7 +23,7 @@
 
     <header class="header">
         <a class="logo"
-           href="@Url.Action("PageHome", "Categories1",new { area = "Customer" })">
+           href="@Url.Action("Index", "Categories1",new { area = "Customer" })">
             PHONE&ACCES
         </a>
 
@@ -34,7 +34,7 @@
     </header>
 
     <nav class="navbar">
-        <a href="@Url.Action("PageHome", "Categories1", new { area = "Customer" })">TRANG CHỦ</a>
+        <a href="@Url.Action("Index", "Categories1", new { area = "Customer" })">TRANG CHỦ</a>
         <a href="@Url.Action("PageDienThoai", "Categories1", new { area = "Customer" })">ĐIỆN THOẠI</a>
         <a href="#">PHỤ KIỆN</a>
         <a href="#">THIẾT BỊ ĐEO THÔNG MINH</a>
@@ -67,6 +67,7 @@
                            id="username"
                            name="username"
                            placeholder="Nhập tên đăng nhập hoặc email"
+<a href="~/Areas/Customer/Views/Categories1/PageHome.cshtml">~/Areas/Customer/Views/Categories1/PageHome.cshtml</a>
                            required />
                 </div>
 

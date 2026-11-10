@@ -26,7 +26,9 @@
             </div>
         }
         <span class="wishlist">♡ Yêu thích</span>
-        <a href="#cart" class="cart-link">🛒 Giỏ hàng <b id="cart-count">0</b></a>
+        <a href="@Url.Action("Index", "Cart" ,new { area = "" })" class="login-link">
+        🛒 Giỏ hàng <b id="cart-count">0</b>
+        </a>
         <a href="@Url.Action("Login", "Categories1", new { area = "Customer" })" class="login-link">
             Đăng nhập
         </a>

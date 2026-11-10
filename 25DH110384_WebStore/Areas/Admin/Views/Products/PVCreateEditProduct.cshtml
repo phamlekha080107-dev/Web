@@ -50,7 +50,7 @@
 <div class="form-group">
     <div class="control-label col-md-2">Mô tả</div>
     <div class="col-md-10">
-        @Html.TextAreaFor(model => model.ProductDescription, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.TextAreaFor(model => model.ProductDescription,  new { @class = "form-control" }) 
         @Html.ValidationMessageFor(model => model.ProductDescription, "", new { @class = "text-danger" })
     </div>
 </div>

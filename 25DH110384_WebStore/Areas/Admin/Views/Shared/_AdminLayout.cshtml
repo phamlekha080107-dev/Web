@@ -18,15 +18,17 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("WebStore", "Index", "Admin/Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("WebStore", "Index", "Admin/Home", new { area = "Admin" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Danh mục", "Index", "Categories")</li>
-                    <li>@Html.ActionLink("Sản phẩm", "Index", "Products")</li>
+                    <li><a href="@Url.Action("Index", "Categories1")"></li>
+                    <li>@Html.ActionLink("Danh mục", "Index", "Categories1")</li>
+                    
+                    <li>@Html.ActionLink("Sản phẩm", "Index", "Products"))</li>
+
                     <li>@Html.ActionLink("Khách Hàng", "Index", "Customers")</li>
-                    <li>@Html.ActionLink("Đơn Hàng", "Index", "Orders")</li>
+                    <li>@Html.ActionLink("Đơn Hàng", "Index", "Cart")</li>
                     <li>@Html.ActionLink("Tài Khoản", "Index", "Users")</li>
                 </ul>
             </div>

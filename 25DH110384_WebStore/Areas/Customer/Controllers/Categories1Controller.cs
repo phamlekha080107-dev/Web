@@ -32,7 +32,7 @@ namespace _25DH110384_WebStore.Areas.Customer.Controllers
             }
 
             int pageNumber = page ?? 1;
-            int pageSize = 6;
+            int pageSize = 10;
 
             // Gán dữ liệu vào các thuộc tính của HomeProductVM
             model.FeaturedProducts = products.OrderByDescending(p => p.OrderDetails.Count()).Take(10).ToList();
