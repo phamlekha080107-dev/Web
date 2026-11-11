@@ -5,29 +5,131 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="bg-success" style="padding: 10px;">DANH SÁCH ĐƠN HÀNG</h2>
-
-<table class="table table-bordered table-striped bg-info">
-    <tr class="bg-success">
-        <th>Mã ĐH</th>  
-        <th>Tên khách hàng</th>
-        <th>Ngày đặt</th>
-        <th>Tổng tiền</th>
-        <th>Địa chỉ giao hàng</th>
-        <th>Thao tác</th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
-            <td>@Html.DisplayFor(modelItem => item.Customer.CustomerName)</td>
-            <td>@Html.DisplayFor(modelItem => item.OrderDate)</td>
-            <td>@String.Format("{0:N0} VNĐ", item.TotalAmount)</td>
-            <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
-            <td>
-                @Html.ActionLink("Xem chi tiết đơn", "Details", new { id = item.OrderID }, new { @class = "btn btn-primary btn-sm" })
-            </td>
-        </tr>
+<style>
+    .order-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+        margin-top: 20px;
     }
-</table>
+
+    .order-header {
+        background-color: #1e824c;
+        color: white;
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 1.3rem;
+    }
+
+    .custom-table {
+        margin-bottom: 0;
+        width: 100%;
+        table-layout: fixed; /* Giữ cố định tỉ lệ chia cột */
+    }
+
+        .custom-table th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 700;
+            border-bottom: 2px solid #dee2e6 !important;
+            padding: 12px !important;
+            vertical-align: middle !important;
+        }
+
+        .custom-table td {
+            vertical-align: middle !important;
+            padding: 12px !important;
+        }
+
+    .badge-id {
+        background-color: #e9ecef;
+        color: #495057;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    .price-text {
+        color: #d9534f;
+        font-weight: bold;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+</style>
+
+<div class="order-card">
+    <div class="order-header">
+        <i class="fas fa-list-alt" style="margin-right: 8px;"></i> DANH SÁCH ĐƠN HÀNG
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover custom-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 80px;">Mã ĐH</th>
+                    <th class="text-left" style="width: 180px;">Tên khách hàng</th>
+                    <th class="text-center" style="width: 160px;">Ngày đặt</th>
+                    <th class="text-center" style="width: 140px;">Tổng tiền</th>
+                    <th class="text-center">Địa chỉ giao hàng</th>
+                    <th class="text-center" style="width: 180px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <span class="badge-id">#@item.OrderID</span>
+                            </td>
+                            <td class="text-left" style="font-weight: 600;">
+                                @(item.Customer != null ? (string.IsNullOrEmpty(item.Customer.CustomerName) ? item.Customer.Username : item.Customer.CustomerName) : "Khách vãng lai")
+                            </td>
+                            <td class="text-center">
+                                @item.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+                            <td class="text-center price-text">
+                                @(((decimal)item.TotalAmount).ToString("N0")) VNĐ
+                            </td>
+                            <!-- Căn giữa chữ Địa chỉ giao hàng -->
+                            <td class="text-center">
+                                @item.ShippingAddress
+                            </td>
+                            <td class="text-center">
+                                <div class="action-btns">
+                                    <a href="@Url.Action("Details", "Orders", new { area = "Admin", id = item.OrderID })" class="btn btn-info btn-sm" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i> Chi tiết
+                                    </a>
+
+                                    @using (Html.BeginForm("Delete", "Orders", new { area = "Admin", id = item.OrderID }, FormMethod.Post, new { style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng #@item.OrderID này không?');" title="Xóa đơn hàng">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted" style="padding: 30px !important;">
+                            Chưa có đơn hàng nào trong hệ thống.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
