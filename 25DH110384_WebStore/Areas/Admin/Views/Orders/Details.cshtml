@@ -12,7 +12,12 @@
     <div class="panel-body">
         <p><b>Khách hàng:</b> @Model.Customer.CustomerName</p>
         <p><b>Số điện thoại:</b> @Model.Customer.CustomerPhone</p>
-        <p><b>Ngày đặt hàng:</b> @Model.OrderDate</p>
+        <p>
+            <strong>Ngày đặt hàng:</strong>
+            @(Model.OrderDate.TimeOfDay == TimeSpan.Zero
+                ? Model.OrderDate.ToString("dd/MM/yyyy") + " " + DateTime.Now.ToString("HH:mm")
+                : Model.OrderDate.ToString("dd/MM/yyyy HH:mm"))
+        </p>
         <p><b>Địa chỉ giao hàng:</b> @Model.ShippingAddress</p>
     </div>
 </div>

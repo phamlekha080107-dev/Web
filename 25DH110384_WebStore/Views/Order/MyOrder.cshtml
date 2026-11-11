@@ -6,12 +6,18 @@
 }
 
 <style>
+    .my-order-container {
+        background-color: #f5f5fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
     .order-card {
         background: #fff;
-        border: 1px solid #e0e0e0;
         border-radius: 8px;
-        margin-bottom: 20px;
-        padding: 15px;
+        margin-bottom: 16px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .order-header {
@@ -20,53 +26,84 @@
         margin-bottom: 15px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
     }
 
     .order-status {
-        color: #007bff;
-        font-weight: bold;
+        color: #26aa99;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
     }
 
     .product-item {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed #f0f0f0;
     }
 
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
     .product-img {
-        width: 70px;
-        height: 70px;
+        width: 75px;
+        height: 75px;
         object-fit: cover;
         border-radius: 4px;
         margin-right: 15px;
-        border: 1px solid #eee;
+        border: 1px solid #e0e0e0;
     }
 
     .product-info {
         flex-grow: 1;
     }
 
+        .product-info h5 {
+            margin: 0 0 5px 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+    .product-price {
+        font-weight: 600;
+        color: #38383d;
+    }
+
     .order-footer {
         border-top: 1px solid #f0f0f0;
         padding-top: 12px;
-        text-align: right;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .total-price {
-        font-size: 16px;
-        color: #fe3834;
+        font-size: 18px;
+        color: #ff424e;
         font-weight: bold;
+    }
+
+    .btn-action {
+        border-radius: 4px;
+        padding: 6px 16px;
+        font-weight: 500;
     }
 </style>
 
-<div class="container" style="margin-top: 20px;">
-    <h2>ĐƠN HÀNG CỦA TÔI</h2>
-    <hr />
+<div class="container my-order-container">
+    <h3 style="font-weight:700; margin-bottom: 20px;">ĐƠN HÀNG CỦA TÔI</h3>
 
     @if (Model == null || !Model.Any())
     {
-        <div class="alert alert-info">
-            Bạn chưa có đơn hàng nào. @Html.ActionLink("Mua sắm ngay", "Index", "Home")
+        <div class="order-card text-center" style="padding: 40px;">
+            <i class="fas fa-file-invoice fa-3x text-muted" style="margin-bottom: 15px;"></i>
+            <h4>Bạn chưa có đơn hàng nào.</h4>
+            <div style="margin-top: 15px;">
+                @Html.ActionLink("Mua sắm ngay", "Index", "Home", null, new { @class = "btn btn-warning btn-action" })
+            </div>
         </div>
     }
     else
@@ -75,7 +112,11 @@
         {
             <div class="order-card">
                 <div class="order-header">
-                    <span><strong>Mã đơn hàng:</strong> #@order.OrderID | <strong>Ngày đặt:</strong> @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>                    <span class="order-status">@order.PaymentStatus</span>
+                    <span>
+                        <strong>Mã đơn hàng:</strong> #@order.OrderID |
+                        <span class="text-muted">Mã ngày: @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                    </span>
+                    <span class="order-status">@order.PaymentStatus</span>
                 </div>
 
                 <div class="order-body">
@@ -96,12 +137,12 @@
 
                 <div class="order-footer">
                     <div>
-                        <span>Tổng tiền: </span>
+                        <span class="text-muted">Tổng tiền: </span>
                         <span class="total-price">@order.TotalAmount.ToString("N0") đ</span>
                     </div>
-                    <div style="margin-top: 10px;">
-                        @Html.ActionLink("Xem chi tiết", "OrderSuccess", "Order", new { id = order.OrderID }, new { @class = "btn btn-default btn-sm" })
-                        <a href="@Url.Action("Index", "Cart")" class="btn btn-primary btn-sm">Mua lại</a>
+                    <div>
+                        @Html.ActionLink("Xem chi tiết", "OrderSuccess", "Order", new { id = order.OrderID }, new { @class = "btn btn-default btn-action" })
+                        <a href="@Url.Action("Index", "Cart")" class="btn btn-danger btn-action">Mua lại</a>
                     </div>
                 </div>
             </div>

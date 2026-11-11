@@ -3,7 +3,6 @@ using _25DH110384_WebStore.Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace _25DH110384_WebStore.Controllers
@@ -12,79 +11,32 @@ namespace _25DH110384_WebStore.Controllers
     {
         private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
 
-        // GET: Order
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         // GET: Order/Checkout
         public ActionResult Checkout()
         {
             // 1. Kiểm tra giỏ hàng
-            var cart = Session["Cart"] as List<CartItem>;
-            if (cart == null || !cart.Any())
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            // 2. Kiểm tra xác thực người dùng qua Session
-            if (Session["Username"] == null)
-            {
-                return RedirectToAction("Login", "Home");
-            }
-
-            string username = Session["Username"].ToString();
-
-            // 3. Lấy thông tin khách hàng từ CSDL
-            var customer = db.Customers.SingleOrDefault(c => c.Username == username);
-            if (customer == null)
-            {
-                return RedirectToAction("Login", "Home");
-            }
-
-            var model = new CheckoutVM
-            {
-                CartItems = cart,
-                TotalAmount = cart.Sum(item => item.TotalPrice),
-                OrderDate = DateTime.Now,
-                ShippingAddress = customer.CustomerAddress,
-                CustomerID = customer.CustomerID,
-                Username = customer.Username
-            };
-
-            return View(model);
-        }
-
-        // POST: Order/Checkout
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        // GET: Order/Checkout
-        public ActionResult CheckOut()
-        {
-            var cart = Session["Cart"] as List<CartItem>;
-            if (cart == null || !cart.Any())
+            var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
+            if (cart == null || cart.Items == null || !cart.Items.Any())
             {
                 return RedirectToAction("Index", "Cart");
             }
 
+            // 2. Kiểm tra xác thực người dùng
             if (Session["Username"] == null)
             {
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Login", "Account");
             }
 
             string username = Session["Username"].ToString();
-
-            // 1. Tìm thông tin Customer
             var customer = db.Customers.SingleOrDefault(c => c.Username == username);
 
-            // 2. Tự tạo Customer mặc định nếu tài khoản chưa có trong bảng Customer
+            // Tự động tạo bản ghi Customer nếu chưa tồn tại trong CSDL
             if (customer == null)
             {
                 var user = db.Users.SingleOrDefault(u => u.Username == username);
                 if (user == null)
                 {
-                    return RedirectToAction("Login", "Home");
+                    return RedirectToAction("Login", "Account");
                 }
 
                 customer = new Customer
@@ -99,10 +51,20 @@ namespace _25DH110384_WebStore.Controllers
                 db.SaveChanges();
             }
 
+            // Chuyển đổi dữ liệu Giỏ hàng sang List<CartItem> cho CheckoutVM
+            var cartItemsList = cart.Items.Select(i => new CartItem
+            {
+                ProductID = i.ProductID,
+                ProductName = i.ProductName,
+                ProductImage = i.ProductImage,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity
+            }).ToList();
+
             var model = new CheckoutVM
             {
-                CartItems = cart,
-                TotalAmount = cart.Sum(item => item.TotalPrice),
+                CartItems = cartItemsList,
+                TotalAmount = cartItemsList.Sum(item => item.TotalPrice),
                 OrderDate = DateTime.Now,
                 ShippingAddress = customer.CustomerAddress,
                 CustomerID = customer.CustomerID,
@@ -112,40 +74,63 @@ namespace _25DH110384_WebStore.Controllers
             return View(model);
         }
 
-        // Action nhận callback lưu đơn hàng sau khi thanh toán thành công (PayPal hoặc COD)
-        public ActionResult CreateOrder(CheckoutVM model)
+        // POST: Order/Checkout
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Checkout(CheckoutVM model)
         {
-            var cart = Session["Cart"] as List<CartItem>;
-            if (cart == null || !cart.Any())
+            var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
+            if (cart == null || cart.Items == null || !cart.Items.Any())
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Cart");
             }
 
-            string username = Session["Username"] != null ? Session["Username"].ToString() : model.Username;
+            if (Session["Username"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            string username = Session["Username"].ToString();
             var customer = db.Customers.SingleOrDefault(c => c.Username == username);
 
             if (customer == null)
             {
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Login", "Account");
             }
 
-            string paymentStatus = model.PaymentMethod == "Paypal" ? "Thanh toán paypal" : "Thanh toán tiền mặt";
-            return SaveOrderAndRedirect(model, customer, cart, paymentStatus);
+            // Nếu chọn thanh toán Paypal
+            if (model.PaymentMethod == "Paypal")
+            {
+                return RedirectToAction("PaymentWithPaypal", "Paypal", model);
+            }
+
+            // Chuyển đổi item để lưu đơn hàng
+            var cartItemsList = cart.Items.Select(i => new CartItem
+            {
+                ProductID = i.ProductID,
+                ProductName = i.ProductName,
+                ProductImage = i.ProductImage,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity,
+            }).ToList();
+
+            // Lưu đơn hàng với thời gian thực hiện tại
+            return SaveOrderAndRedirect(model, customer, cartItemsList, "Thanh toán tiền mặt");
         }
 
-        // Hàm dùng chung để lưu Order & OrderDetail vào CSDL
-        private ActionResult SaveOrderAndRedirect(CheckoutVM model, Customer customer, List<CartItem> cart, string paymentStatus)
+        private ActionResult SaveOrderAndRedirect(CheckoutVM model, Customer customer, List<CartItem> cartItems, string paymentStatus)
         {
+            DateTime currentDateTime = DateTime.Now;
             var order = new Order
             {
                 CustomerID = customer.CustomerID,
-                OrderDate = DateTime.Now,
+                OrderDate = DateTime.Now, // Lưu chính xác ngày giờ bấm đặt hàng
                 TotalAmount = model.TotalAmount,
                 PaymentStatus = paymentStatus,
-                PaymentMethod = model.PaymentMethod,
-                ShippingMethod = model.ShippingMethod,
-                ShippingAddress = model.ShippingAddress,
-                OrderDetails = cart.Select(item => new OrderDetail
+                PaymentMethod = model.PaymentMethod ?? "Tiền mặt",
+                ShippingMethod = model.ShippingMethod ?? "Giao hàng nhanh",
+                ShippingAddress = string.IsNullOrEmpty(model.ShippingAddress) ? customer.CustomerAddress : model.ShippingAddress,
+                OrderDetails = cartItems.Select(item => new OrderDetail
                 {
                     ProductID = item.ProductID,
                     Quantity = item.Quantity,
@@ -157,7 +142,7 @@ namespace _25DH110384_WebStore.Controllers
             db.Orders.Add(order);
             db.SaveChanges();
 
-            // Xóa giỏ hàng sau khi đặt hàng thành công
+            // Xóa sạch giỏ hàng sau khi đặt thành công
             Session["Cart"] = null;
 
             return RedirectToAction("OrderSuccess", new { id = order.OrderID });
@@ -166,7 +151,8 @@ namespace _25DH110384_WebStore.Controllers
         // GET: Order/OrderSuccess/5
         public ActionResult OrderSuccess(int id)
         {
-            var order = db.Orders.Include("OrderDetails").SingleOrDefault(o => o.OrderID == id);
+            // Include thêm Product để nạp đủ Tên và Ảnh sản phẩm ra View
+            var order = db.Orders.Include("OrderDetails.Product").SingleOrDefault(o => o.OrderID == id);
             if (order == null)
             {
                 return HttpNotFound();
@@ -175,14 +161,12 @@ namespace _25DH110384_WebStore.Controllers
             return View(order);
         }
 
-
         // GET: Order/MyOrder
         public ActionResult MyOrder()
         {
-            // Kiểm tra đăng nhập qua Session
             if (Session["Username"] == null)
             {
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Login", "Account");
             }
 
             string username = Session["Username"].ToString();
@@ -193,7 +177,6 @@ namespace _25DH110384_WebStore.Controllers
                 return View(new List<Order>());
             }
 
-            // Lấy danh sách đơn hàng kèm theo thông tin chi tiết và sản phẩm
             var orders = db.Orders
                            .Include("OrderDetails.Product")
                            .Where(o => o.CustomerID == customer.CustomerID)

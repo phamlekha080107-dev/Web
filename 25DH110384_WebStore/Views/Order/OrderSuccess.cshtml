@@ -1,51 +1,105 @@
 ﻿@model _25DH110384_WebStore.Models.Order
 
 @{
-    ViewBag.Title = "OrderSuccess";
+    ViewBag.Title = "Đặt hàng thành công";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container text-center" style="margin-top: 50px;">
-    <h2 class="text-success">CẢM ƠN BẠN ĐÃ ĐẶT HÀNG!</h2>
-    <p>Mã đơn hàng của bạn là: <strong>#@Model.OrderID</strong></p>
-    <p>Tổng tiền: <strong style="color:red;">@Model.TotalAmount.ToString("N0") đ</strong></p>
-    <hr />
-    <div>
-        @Html.ActionLink("Xem đơn hàng của tôi", "MyOrder", "Order", null, new { @class = "btn btn-primary" })
-        @Html.ActionLink("Tiếp tục mua sắm", "Index", "Home", null, new { @class = "btn btn-default" })
+<style>
+    .order-success-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        display: inline-block;
+        max-width: 750px;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .detail-table th {
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+
+    .detail-table td {
+        vertical-align: middle !important;
+    }
+
+    .product-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #eee;
+    }
+</style>
+
+<div class="container text-center" style="margin-top: 40px; margin-bottom: 50px;">
+    <div class="order-success-card">
+        <i class="fas fa-check-circle text-success fa-4x" style="margin-bottom: 20px;"></i>
+        <h2 class="text-success" style="font-weight: 700;">ĐẶT HÀNG THÀNH CÔNG!</h2>
+        <p class="lead">Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.</p>
+        <hr />
+
+        <!-- THÔNG TIN ĐƠN HÀNG -->
+        <div class="text-left" style="margin-bottom: 25px; line-height: 2;">
+            <p><strong>Mã đơn hàng:</strong> <span class="text-primary">#@Model.OrderID</span></p>
+            <p><strong>Ngày đặt hàng:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+            <p><strong>Địa chỉ nhận hàng:</strong> @Model.ShippingAddress</p>
+            <p><strong>Phương thức thanh toán:</strong> @(string.IsNullOrEmpty(Model.PaymentMethod) ? "Tiền mặt" : Model.PaymentMethod)</p>
+        </div>
+
+        <!-- CHI TIẾT SẢN PHẨM TRONG ĐƠN HÀNG -->
+        <h4 class="text-left" style="font-weight: 700; margin-bottom: 15px;">Chi tiết sản phẩm</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered detail-table">
+                <thead>
+                    <tr>
+                        <th colspan="2">Sản phẩm</th>
+                        <th style="width: 90px;">Số lượng</th>
+                        <th style="width: 130px;">Đơn giá</th>
+                        <th style="width: 130px;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.OrderDetails != null && Model.OrderDetails.Any())
+                    {
+                        foreach (var item in Model.OrderDetails)
+                        {
+                            <tr>
+                                <td style="width: 70px;" class="text-center">
+                                    <img src="@(item.Product != null ? item.Product.ProductImage : "/Images/default.png")" class="product-img" alt="Product" />
+                                </td>
+                                <td class="text-left" style="font-weight: 600;">
+                                    @(item.Product != null ? item.Product.ProductName : "Sản phẩm mã #" + item.ProductID)
+                                </td>
+                                <td class="text-center">@(item.Quantity)</td>
+                                <td class="text-right">@item.UnitPrice.ToString("N0") đ</td>
+                                <td class="text-right" style="font-weight: 600;">@(((decimal)item.TotalPrice).ToString("N0")) đ</td>                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-muted">Không có thông tin chi tiết sản phẩm.</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-right" style="font-size: 1.1rem;">Tổng cộng thanh toán:</th>
+                        <th class="text-right" style="color: #ff424e; font-weight: bold; font-size: 1.2rem;">
+                            @Model.TotalAmount.ToString("N0") đ
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="@Url.Action("MyOrder", "Order")" class="btn btn-primary btn-lg">Xem đơn hàng của tôi</a>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-default btn-lg">Tiếp tục mua hàng</a>
+        </div>
     </div>
 </div>
-<h2>XÁC NHẬN ĐƠN HÀNG</h2>
-<h3>Thông tin đơn hàng</h3>
-<div>
-    <p><strong>Mã đơn hàng:</strong> @Model.OrderID</p>
-    <p><strong>Ngày đặt hàng:</strong> @Model.OrderDate</p>
-    <p><strong>Tổng số tiền:</strong> @Model.TotalAmount</p>
-    <p><strong>Trạng thái thanh toán:</strong> @Model.PaymentStatus</p>
-    <p><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</p>
-    <p><strong>Phương thức giao hàng:</strong> @Model.ShippingMethod</p>
-    <p><strong>Địa chỉ giao hàng:</strong> @Model.ShippingAddress</p>
-</div>
-
-<h3>Chi tiết đơn hàng</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Đơn giá</th>
-            <th>Tổng giá</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.OrderDetails)
-        {
-            <tr>
-                <td>@item.Product.ProductName</td>
-                <td>@item.Quantity</td>
-                <td>@item.UnitPrice</td>
-                <td>@item.TotalPrice</td>
-            </tr>
-        }
-    </tbody>
-</table>

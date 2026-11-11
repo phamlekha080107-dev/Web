@@ -26,9 +26,9 @@
                 <tr>
                     <td>@item.LoaiHang</td>
                     <td>@item.SoLuong</td>
-                    <td>@item.GiaCaoNhat.ToString("N2")</td>
-                    <td>@item.GiaThapNhat.ToString("N2")</td>
-                    <td>@item.GiaTrungBinh.ToString("N2")</td>
+                    <td>@item.GiaCaoNhat.ToString("N0") đ</td>
+                    <td>@item.GiaThapNhat.ToString("N0") đ</td>
+                    <td>@item.GiaTrungBinh.ToString("N0") đ</td>
                 </tr>
             }
         </tbody>
@@ -42,7 +42,7 @@
     </div>
     <div class="panel-body" style="text-align: center;">
         <!-- Thẻ div chứa biểu đồ -->
-        <div id="piechart_3d" style="width: 700px; height: 450px; margin: 0 auto;"></div>
+        <div id="piechart_3d" style="width: 750px; height: 450px; margin: 0 auto;"></div>
     </div>
 </div>
 
@@ -53,28 +53,26 @@
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-        // Tạo bảng dữ liệu cho Google Chart
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Loại Hàng');
         data.addColumn('number', 'Số Lượng');
 
-        // Đổ dữ liệu từ Model C# sang mảng JavaScript
         var dataArray = [];
         @foreach (var item in Model)
         {
             <text>
-            dataArray.push(['@item.LoaiHang', @item.SoLuong]);
+            // Sử dụng Html.Raw(Json.Encode(...)) để giữ nguyên tiếng Việt có dấu
+            dataArray.push([@Html.Raw(Json.Encode(item.LoaiHang)), @item.SoLuong]);
             </text>
         }
         data.addRows(dataArray);
 
-        // Cấu hình giao diện biểu đồ (kiểu 3D như hình mẫu)
         var options = {
             title: 'TỶ LỆ HÀNG HÓA THEO SỐ LƯỢNG',
             is3D: true,
+            chartArea: { width: '90%', height: '80%' }
         };
 
-        // Vẽ biểu đồ vào thẻ div 'piechart_3d'
         var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
         chart.draw(data, options);
     }
