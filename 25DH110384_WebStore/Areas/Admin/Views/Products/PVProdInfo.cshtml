@@ -1,35 +1,111 @@
-﻿
-@model _25DH110384_WebStore.Models.Product
+﻿@model _25DH110384_WebStore.Models.Product
 
-<head>
-    <style>
-        img {
-            height: 250px;
-            max-width: 250px;
+<style>
+    /* --- Info Layout & Product Image --- */
+    .product-detail-img-box {
+        width: 100%;
+        max-width: 280px;
+        height: 280px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+        .product-detail-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-    </style>
-</head>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-4 ">
-            <img src="@Html.DisplayFor(model => model.ProductImage)" />
+
+    /* --- Info List Styling --- */
+    .info-group-item {
+        padding: 0.75rem 1rem;
+        background-color: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: #1e293b;
+    }
+</style>
+
+<div class="row gy-4 align-items-start">
+    <!-- Cột ảnh sản phẩm -->
+    <div class="col-md-5 text-center">
+        <div class="product-detail-img-box shadow-sm mb-2">
+            @if (!string.IsNullOrEmpty(Model.ProductImage))
+            {
+                <img src="@Url.Content(Model.ProductImage)" alt="@Model.ProductName" />
+            }
+            else
+            {
+                <div class="text-muted">
+                    <i class="fa-regular fa-image fs-1 d-block mb-2"></i>
+                    <span>Chưa có hình ảnh</span>
+                </div>
+            }
         </div>
-        <div class="col-md-8">
-            <dl>
-                <dt>Tên sản phẩm</dt>
-                <dd>@Html.DisplayFor(model => model.ProductName)</dd>
+        <span class="badge bg-light text-secondary border mt-2 px-3 py-2">
+            <i class="fa-solid fa-barcode me-1"></i> Mã SP: #@Model.ProductID
+        </span>
+    </div>
 
-                <dt>Đơn giá </dt>
-                <dd>@Html.DisplayFor(model => model.ProductPrice)</dd>
+    <!-- Cột chi tiết thuộc tính -->
+    <div class="col-md-7">
+        <!-- Tên sản phẩm -->
+        <div class="info-group-item">
+            <div class="info-label">Tên sản phẩm</div>
+            <div class="info-value fw-bold text-primary fs-5">
+                @Html.DisplayFor(model => model.ProductName)
+            </div>
+        </div>
 
+        <!-- Đơn giá -->
+        <div class="info-group-item">
+            <div class="info-label">Đơn giá</div>
+            <div class="info-value fw-bold text-success fs-5">
+                @string.Format("{0:N0} VNĐ", Model.ProductPrice)
+            </div>
+        </div>
 
-                <dt>Mô tả   </dt>
-                <dd>@Html.DisplayFor(model => model.ProductDescription)</dd>
+        <!-- Danh mục -->
+        <div class="info-group-item">
+            <div class="info-label">Danh mục sản phẩm</div>
+            <div class="info-value fw-semibold">
+                <i class="fa-regular fa-folder text-warning me-1"></i>
+                @(Model.Category != null ? Model.Category.CategoryName : "Chưa phân loại")
+            </div>
+        </div>
 
-                <dt>Danh mục   </dt>
-                <dd>@Html.DisplayFor(model => model.Category.CategoryName)</dd>
-
-            </dl>
+        <!-- Mô tả sản phẩm -->
+        <div class="info-group-item">
+            <div class="info-label mb-1">Mô tả sản phẩm</div>
+            <div class="info-value text-muted" style="white-space: pre-line; font-size: 0.95rem;">
+                @if (!string.IsNullOrEmpty(Model.ProductDescription))
+                {
+                    @Html.DisplayFor(model => model.ProductDescription)
+                }
+                else
+                {
+                    <em class="text-black-50">Không có mô tả cho sản phẩm này.</em>
+                }
+            </div>
         </div>
     </div>
 </div>

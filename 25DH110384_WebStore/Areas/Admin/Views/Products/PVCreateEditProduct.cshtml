@@ -1,63 +1,87 @@
 ﻿@model _25DH110384_WebStore.Models.Product
-<head>
-    <style>
-        textarea {
-            width: 100%;
-            height: 150px;
-            padding: 12px 5px;
-            box-sizing: border-box;
-            border: 1px solid #800800;
-            border-radius: 5px;
-            background-color: whitesmoke;
-            resize: none;
+
+<style>
+    .product-pv-form .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.4rem;
+    }
+
+    .product-pv-form .form-control,
+    .product-pv-form .form-select {
+        border-color: #cbd5e1;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .product-pv-form .form-control:focus,
+        .product-pv-form .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
-    </style>
-</head>
 
+    .product-pv-form textarea.form-control {
+        height: 130px;
+        resize: vertical;
+    }
+</style>
 
-<div class="form-group">
-    <div class="control-label col-md-2">Danh mục</div>
-    <div class="col-md-10">
-        @Html.DropDownList("CategoryID", null, htmlAttributes: new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
+<div class="product-pv-form">
+    <div class="row g-3">
+        <!-- Danh mục sản phẩm -->
+        <div class="col-md-6">
+            <label class="form-label">
+                <i class="fa-regular fa-folder text-primary me-1"></i> Danh mục sản phẩm <span class="text-danger">*</span>
+            </label>
+            @Html.DropDownList("CategoryID", null, htmlAttributes: new { @class = "form-select" })
+            @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger small mt-1 d-block" })
+        </div>
+
+        <!-- Tên sản phẩm -->
+        <div class="col-md-6">
+            <label class="form-label">
+                <i class="fa-solid fa-tag text-primary me-1"></i> Tên sản phẩm <span class="text-danger">*</span>
+            </label>
+            @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập tên sản phẩm..." } })
+            @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger small mt-1 d-block" })
+        </div>
+
+        <!-- Đơn giá -->
+        <div class="col-md-6">
+            <label class="form-label">
+                <i class="fa-solid fa-coins text-warning me-1"></i> Đơn giá (VNĐ) <span class="text-danger">*</span>
+            </label>
+            @Html.EditorFor(model => model.ProductPrice, new { htmlAttributes = new { @class = "form-control", placeholder = "Ví dụ: 150000", type = "number" } })
+            @Html.ValidationMessageFor(model => model.ProductPrice, "", new { @class = "text-danger small mt-1 d-block" })
+        </div>
+
+        <!-- Đường dẫn hình ảnh -->
+        <div class="col-md-6">
+            <label class="form-label">
+                <i class="fa-regular fa-image text-info me-1"></i> Đường dẫn ảnh
+            </label>
+            @Html.EditorFor(model => model.ProductImage, new { htmlAttributes = new { @class = "form-control", placeholder = "~/Images/products/example.jpg" } })
+            @Html.ValidationMessageFor(model => model.ProductImage, "", new { @class = "text-danger small mt-1 d-block" })
+        </div>
+
+        <!-- Mô tả -->
+        <div class="col-12">
+            <label class="form-label">
+                <i class="fa-solid fa-align-left text-secondary me-1"></i> Mô tả chi tiết
+            </label>
+            @Html.TextAreaFor(model => model.ProductDescription, new { @class = "form-control", placeholder = "Nhập thông tin mô tả chi tiết sản phẩm..." })
+            @Html.ValidationMessageFor(model => model.ProductDescription, "", new { @class = "text-danger small mt-1 d-block" })
+        </div>
     </div>
-</div>
 
-<div class="form-group">
-    <div class="control-label col-md-2">Tên sản phẩm</div>
-    <div class="col-md-10">
-        @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="control-label col-md-2">Đơn giá</div>
-    <div class="col-md-10">
-        @Html.EditorFor(model => model.ProductPrice, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(model => model.ProductPrice, "", new { @class = "text-danger" })
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="control-label col-md-2">Hình ảnh</div>
-    <div class="col-md-10">
-        @Html.EditorFor(model => model.ProductImage, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(model => model.ProductImage, "", new { @class = "text-danger" })
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="control-label col-md-2">Mô tả</div>
-    <div class="col-md-10">
-        @Html.TextAreaFor(model => model.ProductDescription,  new { @class = "form-control" }) 
-        @Html.ValidationMessageFor(model => model.ProductDescription, "", new { @class = "text-danger" })
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="col-md-offset-2 col-md-10">
-        <input type="submit" value="Lưu" class="btn btn-primary" />
-        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary btn-md" })
+    <!-- Cụm nút thao tác -->
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-outline-secondary px-4 py-2" })
+        <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Lưu thông tin
+        </button>
     </div>
 </div>

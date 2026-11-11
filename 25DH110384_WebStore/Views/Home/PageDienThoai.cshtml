@@ -1,4 +1,4 @@
-﻿@model IEnumerable<_25DH110384_WebStore.Models.Category>
+﻿﻿@model IEnumerable<_25DH110384_WebStore.Models.Category>
 <link rel="stylesheet" href="~/Areas/Customer/Content/PageDienThoai.css" />
 @{
     Layout = null;
@@ -28,7 +28,7 @@
     </header>
 
     <nav class="navbar">
-        <a href="@Url.Action("Index", "Categories1", new { area = "Customer" })">TRANG CHỦ</a>
+        <a href="@Url.Action("Index", "Home"    )">TRANG CHỦ</a>
         <a href="#">ĐIỆN THOẠI</a>
         <a href="#products">PHỤ KIỆN</a>
         <a href="#featured">THIẾT BỊ ĐEO THÔNG MINH</a>
@@ -94,7 +94,7 @@
                 <button onclick="addPhone()">Thêm vào giỏ</button>
             </div>
 
-            
+
 
         </div>
     </main>
@@ -104,7 +104,7 @@
         <p>Điện thoại và phụ kiện công nghệ dành cho bạn.</p>
     </footer>
 
-    
+
 
 </body>
 </html>

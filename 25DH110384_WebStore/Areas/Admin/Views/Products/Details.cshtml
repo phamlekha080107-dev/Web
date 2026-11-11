@@ -1,17 +1,74 @@
 ﻿@model _25DH110384_WebStore.Models.Product
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="bg-success">CHI TIẾT SẢN PHẨM</h2>
+<style>
+    /* --- Details Container Styling --- */
+    .product-details-container {
+        padding: 1.5rem 0;
+    }
 
-@Html.Partial("PVProdInfo", Model)
+    .card-product-details {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0 !important;
+    }
 
-<div class="form-group" style="padding: 10px">
-    <div class="col-md-offset-4 col-md-8 ">
-        @Html.ActionLink("Sửa", "Edit", new { id = Model.ProductID }, new { @class = "btn btn-primary" })
-        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+        .card-product-details .card-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        }
+
+        /* --- Form Buttons --- */
+        .card-product-details .btn {
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .card-product-details .btn-warning {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
+
+            .card-product-details .btn-warning:hover {
+                background-color: #b45309;
+                border-color: #b45309;
+                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+            }
+
+        .card-product-details .btn-outline-secondary {
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+
+            .card-product-details .btn-outline-secondary:hover {
+                background-color: #f1f5f9;
+                color: #1e293b;
+            }
+</style>
+
+<div class="product-details-container">
+    <div class="card card-product-details border-0 shadow-sm mx-auto" style="max-width: 850px;">
+        <!-- Header -->
+        <div class="card-header bg-primary text-white p-3">
+            <h5 class="m-0 fw-bold">
+                <i class="fa-solid fa-box-archive me-2"></i>THÔNG TIN CHI TIẾT SẢN PHẨM
+            </h5>
+        </div>
+
+        <!-- Body: Partial View -->
+        <div class="card-body p-4">
+            @Html.Partial("PVProdInfo", Model)
+
+            <!-- Footer Buttons -->
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-outline-secondary px-4 py-2" })
+                @Html.ActionLink("Chỉnh sửa", "Edit", new { id = Model.ProductID }, new { @class = "btn btn-warning text-white px-4 py-2 fw-semibold" })
+            </div>
+        </div>
     </div>
 </div>

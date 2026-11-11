@@ -1,23 +1,99 @@
 ﻿@model _25DH110384_WebStore.Models.Product
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Xác nhận xóa sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-
-<h2 class="bg-success">XÓA SẢN PHẨM</h2>
-
-<h4 class="bg-danger">Bạn có chắc chắn xóa sản phẩm này ?</h4>
-
-@Html.Partial("PVProdInfo", Model)
-
-<div class="col-md-4 col-md-8">
-    @using (Html.BeginForm("Delete", "Products", new { id = Model.ProductID }, FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-
-        <input type="submit" value="Xóa" class="btn btn-danger" />
-        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-default" })
+<style>
+    /* --- Delete Product Layout --- */
+    .product-delete-container {
+        padding: 1.5rem 0;
     }
+
+    .card-product-delete {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+        .card-product-delete .card-header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        }
+
+    /* --- Warning Alert Box --- */
+    .alert-warning-custom {
+        background-color: #fffbeb;
+        color: #b45309;
+        border: 1px solid #fef3c7;
+        border-radius: 8px;
+    }
+
+    /* --- Action Buttons --- */
+    .card-product-delete .btn {
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .card-product-delete .btn-danger {
+        background-color: #dc2626;
+        border-color: #dc2626;
+    }
+
+        .card-product-delete .btn-danger:hover {
+            background-color: #b91c1c;
+            border-color: #b91c1c;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
+
+    .card-product-delete .btn-outline-secondary {
+        color: #475569;
+        border-color: #cbd5e1;
+    }
+
+        .card-product-delete .btn-outline-secondary:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+</style>
+
+<div class="product-delete-container">
+    <div class="card card-product-delete border-0 shadow-sm mx-auto" style="max-width: 850px;">
+        <!-- Header cảnh báo -->
+        <div class="card-header text-white p-3">
+            <h5 class="m-0 fw-bold">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>XÁC NHẬN XÓA SẢN PHẨM
+            </h5>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Alert cảnh báo hành động -->
+            <div class="alert alert-warning-custom d-flex align-items-center mb-4 p-3" role="alert">
+                <i class="fa-solid fa-circle-exclamation fs-3 me-3 text-warning"></i>
+                <div>
+                    <strong>Cảnh báo nguy hiểm:</strong> Bạn có chắc chắn muốn xóa sản phẩm này ra khỏi hệ thống? Thao tác này không thể hoàn tác.
+                </div>
+            </div>
+
+            <!-- Nối Partial View thông tin sản phẩm -->
+            <div class="p-2">
+                @Html.Partial("PVProdInfo", Model)
+            </div>
+
+            <!-- Form xử lý submit xóa -->
+            @using (Html.BeginForm("Delete", "Products", new { id = Model.ProductID }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-outline-secondary px-4 py-2" })
+                    <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold shadow-sm">
+                        <i class="fa-solid fa-trash me-1"></i> Xóa vĩnh viễn
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
 </div>

@@ -1,122 +1,175 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.ProductSearchVM
 
 @{
-    ViewBag.Title = "Search Product";
+    ViewBag.Title = "Tìm kiếm sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Search</title>
-    <style>
-        .search-container, .order-container {
-            padding-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+<style>
+    /* --- Search & Filter Bar Styling --- */
+    .product-search-bar {
+        background-color: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+
+        .product-search-bar .form-control,
+        .product-search-bar .form-select {
+            border-color: #cbd5e1;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            padding: 0.55rem 0.85rem;
         }
-    </style>
-</head>
-<body>
-    <!-- Form tìm kiếm -->
-    @using (Html.BeginForm("Index", "Products", FormMethod.Get))
-    {
-        <div class="form-group search-container">
-            @Html.TextBoxFor(m => m.SearchTerm, new
-            {
-                @class = "form-control",
-                placeholder = "Nhập tên, mô tả hoặc chủng loại sản phẩm"
-            })
 
-            @* bổ sung thêm trường tìm kiếm theo khoảng giá *@
-            @Html.TextBoxFor(m => m.MinPrice, new
-            {
-                @class = "form-control",
-                placeholder = "Nhập giá tối thiểu",
-                type = "number"
-            })
+            .product-search-bar .form-control:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            }
 
-            @Html.TextBoxFor(m => m.MaxPrice, new
-            {
-                @class = "form-control",
-                placeholder = "Nhập giá tối đa",
-                type = "number"
-            })
+        .product-search-bar .btn-search {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.55rem 1.25rem;
+            transition: all 0.2s ease;
+        }
 
-            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-        </div>
+            .product-search-bar .btn-search:hover {
+                background-color: #1d4ed8;
+                border-color: #1d4ed8;
+            }
 
-        @* -- Tùy chọn sắp xếp -- *@
-        <div class="form-group order-container">
-            Sắp xếp theo:
+    /* --- Sort Badges & Buttons --- */
+    .sort-group .sort-link {
+        color: #475569;
+        background-color: #f8fafc;
+        border: 1px solid #cbd5e1;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-size: 0.825rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
 
-            @Html.ActionLink("Tên tăng dần", "Index", "Products",
+        .sort-group .sort-link:hover {
+            color: #2563eb;
+            background-color: #eff6ff;
+            border-color: #93c5fd;
+        }
+
+        .sort-group .sort-link.active {
+            color: #ffffff;
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+</style>
+
+<div class="product-search-container mb-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-dark m-0 fs-4">TÌM KIẾM & LỌC SẢN PHẨM</h3>
+    </div>
+
+    <!-- Form tìm kiếm & Bộ lọc -->
+    <div class="product-search-bar p-4 shadow-sm mb-4">
+        @using (Html.BeginForm("Index", "Products", FormMethod.Get, new { @class = "row g-3 align-items-center" }))
+        {
+            <!-- Ô tìm kiếm từ khóa -->
+            <div class="col-lg-5 col-md-12">
+                <label class="form-label fw-semibold text-secondary small mb-1">Từ khóa tìm kiếm</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    @Html.TextBoxFor(m => m.SearchTerm, new
+                    {
+                        @class = "form-control border-start-0 ps-0",
+                        placeholder = "Nhập tên, mô tả hoặc chủng loại..."
+                    })
+                </div>
+            </div>
+
+            <!-- Giá tối thiểu -->
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="form-label fw-semibold text-secondary small mb-1">Giá từ</label>
+                @Html.TextBoxFor(m => m.MinPrice, new
+                {
+                    @class = "form-control",
+                    placeholder = "VNĐ tối thiểu",
+                    type = "number"
+                })
+            </div>
+
+            <!-- Giá tối đa -->
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="form-label fw-semibold text-secondary small mb-1">Giá đến</label>
+                @Html.TextBoxFor(m => m.MaxPrice, new
+                {
+                    @class = "form-control",
+                    placeholder = "VNĐ tối đa",
+                    type = "number"
+                })
+            </div>
+
+            <!-- Nút submit -->
+            <div class="col-lg-3 col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary btn-search w-100 shadow-sm mt-3 mt-md-0">
+                    <i class="fa-solid fa-filter me-1"></i> Tìm kiếm
+                </button>
+            </div>
+        }
+
+        <hr class="my-3 text-muted opacity-25" />
+
+        <!-- Tùy chọn sắp xếp -->
+        <div class="sort-group d-flex align-items-center flex-wrap gap-2">
+            <span class="fw-semibold text-secondary small me-2">
+                <i class="fa-solid fa-arrow-down-up-wide me-1"></i> Sắp xếp theo:
+            </span>
+
+            @Html.ActionLink("Tên A-Z", "Index", "Products",
                 new
                 {
                     sortOrder = "name_asc",
                     searchTerm = Model.SearchTerm,
                     minPrice = Model.MinPrice,
                     maxPrice = Model.MaxPrice
-                }, null)
+                }, new { @class = "sort-link" })
 
-            @Html.ActionLink("Tên giảm dần", "Index", "Products",
+            @Html.ActionLink("Tên Z-A", "Index", "Products",
                 new
                 {
                     sortOrder = "name_desc",
                     searchTerm = Model.SearchTerm,
                     minPrice = Model.MinPrice,
                     maxPrice = Model.MaxPrice
-                }, null)
+                }, new { @class = "sort-link" })
 
-            @Html.ActionLink("Giá tăng dần", "Index", "Products",
+            @Html.ActionLink("Giá thấp đến cao", "Index", "Products",
                 new
                 {
                     sortOrder = "price_asc",
                     searchTerm = Model.SearchTerm,
                     minPrice = Model.MinPrice,
                     maxPrice = Model.MaxPrice
-                }, null)
+                }, new { @class = "sort-link" })
 
-            @Html.ActionLink("Giá giảm dần", "Index", "Products",
+            @Html.ActionLink("Giá cao đến thấp", "Index", "Products",
                 new
                 {
                     sortOrder = "price_desc",
                     searchTerm = Model.SearchTerm,
                     minPrice = Model.MinPrice,
                     maxPrice = Model.MaxPrice
-                }, null)
+                }, new { @class = "sort-link" })
         </div>
+    </div>
 
-
-        <!--<div class="form-group search-container">
-            @Html.TextBoxFor(m => m.SearchTerm, new
-            {
-               @class = "form-control",
-                placeholder = "Nhập tên, mô tả hoặc chủng loại sản phẩm"
-            })-->
-
-
-            @* bổ sung thêm trường tìm kiếm theo khoảng giá *@
-            <!--@Html.TextBoxFor(m => m.MinPrice, new
-            {
-                @class = "form-control",
-                placeholder = "Nhập giá tối thiểu",
-                type = "number"
-            })
-
-            @Html.TextBoxFor(m => m.MaxPrice, new
-            {
-                @class = "form-control",
-                placeholder = "Nhập giá tối đa",
-                type = "number"
-            })
-            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-        </div>-->
-    }
-
-    @* Form kết quả tìm kiếm *@
-    @Html.Partial("PVListProduct", Model)
-
-</body>
-</html>
+    <!-- Kết quả tìm kiếm -->
+    <div class="search-results">
+        @Html.Partial("PVListProduct", Model)
+    </div>
+</div>

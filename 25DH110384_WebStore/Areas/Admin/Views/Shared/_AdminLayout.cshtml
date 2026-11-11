@@ -1,55 +1,125 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Quản Trị Website</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    
-   
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f6f9;
+            color: #333333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-navbar {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 0.8rem 1rem;
+        }
+
+            .admin-navbar .navbar-brand {
+                font-size: 1.25rem;
+                letter-spacing: 0.5px;
+                color: #38bdf8 !important;
+            }
+
+            .admin-navbar .nav-link {
+                color: #94a3b8 !important;
+                font-weight: 500;
+                padding: 0.5rem 1rem !important;
+                border-radius: 6px;
+                transition: all 0.2s ease-in-out;
+            }
+
+                .admin-navbar .nav-link:hover,
+                .admin-navbar .nav-link.active {
+                    color: #ffffff !important;
+                    background-color: rgba(255, 255, 255, 0.08);
+                }
+
+        .body-content {
+            flex: 1;
+        }
+
+        .content-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .admin-footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+            .admin-footer .badge {
+                font-weight: 500;
+                padding: 0.4em 0.8em;
+            }
+    </style>
 </head>
 <body>
-    <div class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top admin-navbar">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" title="more options">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("WebStore", "Index", "Admin/Home", new { area = "Admin" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="@Url.Action("Index", "Categories1")"></li>
-                    <li>@Html.ActionLink("Danh mục", "Index", "Categories1")</li>
-                    
-                    <li>@Html.ActionLink("Sản phẩm", "Index", "Products"))</li>
+            @Html.ActionLink("WebStore Admin", "Index", "WebHome", new { area = "Admin" }, new { @class = "navbar-brand fw-bold" })
 
-                    <li>@Html.ActionLink("Khách Hàng", "Index", "Customers")</li>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                    <li>@Html.ActionLink("Đơn Hàng", "Index", "Orders")</li>
-
-                    <li>@Html.ActionLink("Tài Khoản", "Index", "Users")</li>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        @Html.ActionLink("Danh mục", "Index", "Categories", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Sản phẩm", "Index", "Products", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Khách Hàng", "Index", "Customers", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Đơn Hàng", "Index", "Orders", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Tài Khoản", "Index", "Users", null, new { @class = "nav-link" })
+                    </li>
                 </ul>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Tên ứng dụng</p>
-            <h4>Contact</h4>
-            <p>Tên các thành viên trong nhóm</p>
+    <main class="container body-content py-4">
+        <div class="content-card">
+            @RenderBody()
+        </div>
+    </main>
 
-        </footer>
-    </div>
+    <footer class="admin-footer mt-auto py-4">
+        <div class="container text-center text-md-start">
+            <div class="row gy-3 align-items-center">
+                <div class="col-md-6">
+                    <p class=" mb
+                       </p>
+                </div>
+            </div>
+        </div>
 
+
+    </footer>
     @Scripts.Render("~/bundles/jquery")
+
     @Scripts.Render("~/bundles/bootstrap")
+
     @RenderSection("scripts", required: false)
 </body>
-</html>

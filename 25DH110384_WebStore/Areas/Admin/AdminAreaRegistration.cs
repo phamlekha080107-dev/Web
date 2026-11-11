@@ -12,13 +12,13 @@ namespace _25DH110384_WebStore.Areas.Admin
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
                 "Admin_default",
                 "Admin/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
-
+                new { controller = "WebHome", action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "_25DH110384_WebStore.Areas.Admin.Controllers" }
             );
         }
     }

@@ -13,6 +13,8 @@ namespace _25DH110384_WebStore.Models.ViewModel
         public decimal UnitPrice { get; set; }
         public string ProductImage { get; set; }
 
+        public string Category { get; set; }
+
         // Tổng giá cho mỗi sản phẩm
         public decimal TotalPrice => Quantity * UnitPrice;
     }

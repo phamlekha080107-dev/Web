@@ -90,5 +90,51 @@ namespace _25DH110384_WebStore.Controllers
 
             return View();
         }
+
+        // ================= ĐĂNG NHẬP (LOGIN) =================
+
+        // GET: Categories1/Login
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Categories1/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Kiểm tra thông tin tài khoản trong cơ sở dữ liệu (User/Customer)
+                var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
+                if (user != null)
+                {
+                    // Lưu thông tin session đăng nhập thành công
+                    Session["Username"] = user.Username;
+                    Session["UserRole"] = user.UserRole;
+
+                    // Chuyển hướng về trang chủ sau khi đăng nhập thành công
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ViewBag.Error = "Tên đăng nhập hoặc mật khẩu không chính xác!";
+                }
+            }
+            return View(model);
+        }
+
+        // ====================================================
+
+
+
+        public ActionResult PageDienThoai()
+        {
+            return View(db.Categories.ToList());
+        }
+
+
     }
 }

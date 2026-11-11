@@ -1,10 +1,12 @@
 ﻿using _25DH110384_WebStore.Models;
 using _25DH110384_WebStore.Models.ViewModel;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 
 namespace _25DH110384_WebStore.Controllers
 {
@@ -20,9 +22,24 @@ namespace _25DH110384_WebStore.Controllers
         }
 
         // Hiển thị giỏ hàng
-        public ActionResult Index()
+        public ActionResult Index(int? page)
         {
             var cart = GetCartService().GetCart();
+            var products = db.Products.ToList();
+            var similarProducts = new List<Product>();
+
+            if (cart.Items != null && cart.Items.Any())
+            {
+                similarProducts = products.Where(p => cart.Items.Any(ci => ci.Category == p.Category.CategoryName)
+                    && !cart.Items.Any(ci => ci.ProductID == p.ProductID)).ToList();
+            }
+
+            // Đoạn code liên quan tới phân trang
+            // Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
+            int pageNumber = page ?? 1;
+            int pageSize = cart.PageSize; // Số sản phẩm mỗi trang
+
+            cart.SimilarProducts = similarProducts.OrderBy(p => p.ProductID).ToPagedList(pageNumber, pageSize);
             return View(cart);
         }
 

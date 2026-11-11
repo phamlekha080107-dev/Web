@@ -1,25 +1,69 @@
 ﻿@model _25DH110384_WebStore.Models.Product
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Thêm mới sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="bg-success ">THÊM SẢN PHẨM</h2>
+<style>
+    .product-form-container {
+        padding: 1.5rem 0;
+    }
 
+    .card-product-form {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0 !important;
+    }
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+        .card-product-form .card-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        }
 
-    <div class="form-horizontal">
+        .card-product-form .btn-primary {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            border-radius: 8px;
+        }
 
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.Partial("PVCreateEditProduct", Model)
+            .card-product-form .btn-primary:hover {
+                background-color: #1d4ed8;
+                border-color: #1d4ed8;
+            }
+
+        .card-product-form .btn-outline-secondary {
+            color: #475569;
+            border-color: #cbd5e1;
+            border-radius: 8px;
+        }
+
+            .card-product-form .btn-outline-secondary:hover {
+                background-color: #f1f5f9;
+                color: #1e293b;
+            }
+</style>
+
+<div class="product-form-container">
+    <div class="card card-product-form border-0 shadow-sm mx-auto" style="max-width: 750px;">
+        <div class="card-header text-white p-3">
+            <h5 class="m-0 fw-bold">
+                <i class="fa-solid fa-box-archive me-2"></i>THÊM MỚI SẢN PHẨM
+            </h5>
+        </div>
+
+        <div class="card-body p-4">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger p-2 small mb-3" })
+
+                @Html.Partial("PVCreateEditProduct", Model)
+            }
+        </div>
     </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }
-
-
-
-
-

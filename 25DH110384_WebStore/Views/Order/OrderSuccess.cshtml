@@ -5,6 +5,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<div class="container text-center" style="margin-top: 50px;">
+    <h2 class="text-success">CẢM ƠN BẠN ĐÃ ĐẶT HÀNG!</h2>
+    <p>Mã đơn hàng của bạn là: <strong>#@Model.OrderID</strong></p>
+    <p>Tổng tiền: <strong style="color:red;">@Model.TotalAmount.ToString("N0") đ</strong></p>
+    <hr />
+    <div>
+        @Html.ActionLink("Xem đơn hàng của tôi", "MyOrder", "Order", null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Tiếp tục mua sắm", "Index", "Home", null, new { @class = "btn btn-default" })
+    </div>
+</div>
 <h2>XÁC NHẬN ĐƠN HÀNG</h2>
 <h3>Thông tin đơn hàng</h3>
 <div>
