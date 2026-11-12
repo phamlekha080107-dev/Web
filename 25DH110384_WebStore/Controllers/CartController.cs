@@ -12,8 +12,7 @@ namespace _25DH110384_WebStore.Controllers
 {
     public class CartController : Controller
     {
-        // Thay đổi MyStoreEntities thành tên DbContext thực tế trong dự án của bạn (ví dụ: QuanLiKhachHangEntities)
-        private QuanLiKhachHangEntities1  db = new QuanLiKhachHangEntities1();
+        private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
 
         // Hàm lấy dịch vụ giỏ hàng
         private CartService GetCartService()
@@ -34,18 +33,24 @@ namespace _25DH110384_WebStore.Controllers
                     && !cart.Items.Any(ci => ci.ProductID == p.ProductID)).ToList();
             }
 
-            // Đoạn code liên quan tới phân trang
-            // Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
             int pageNumber = page ?? 1;
-            int pageSize = cart.PageSize; // Số sản phẩm mỗi trang
+            int pageSize = cart.PageSize;
 
             cart.SimilarProducts = similarProducts.OrderBy(p => p.ProductID).ToPagedList(pageNumber, pageSize);
             return View(cart);
         }
 
-        // Thêm sản phẩm vào giỏ
+        // Thêm sản phẩm vào giỏ (BẮT BUỘC ĐĂNG NHẬP)
         public ActionResult AddToCart(int id, int quantity = 1)
         {
+            // 1. Kiểm tra xem người dùng đã đăng nhập hay chưa
+            if (Session["Username"] == null)
+            {
+                // Chưa đăng nhập -> Chuyển hướng sang trang đăng nhập của AccountController
+                return RedirectToAction("Login", "Account");
+            }
+
+            // 2. Nếu đã đăng nhập -> Thực hiện thêm sản phẩm vào giỏ hàng bình thường
             var product = db.Products.Find(id);
             if (product != null)
             {
@@ -85,5 +90,7 @@ namespace _25DH110384_WebStore.Controllers
             cartService.GetCart().UpdateQuantity(id, quantity);
             return RedirectToAction("Index");
         }
+
+        
     }
 }

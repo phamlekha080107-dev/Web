@@ -185,5 +185,45 @@ namespace _25DH110384_WebStore.Controllers
 
             return View(orders);
         }
+
+        // Mua lại đơn hàng cũ -> Đưa vào giỏ hàng và chuyển thẳng đến trang Thanh toán
+        public ActionResult BuyAgain(int id)
+        {
+            // Kiểm tra đăng nhập
+            if (Session["Username"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Tìm đơn hàng kèm chi tiết sản phẩm và sản phẩm
+            var db = new QuanLiKhachHangEntities1();
+            var order = db.Orders
+                          .Include("OrderDetails.Product")
+                          .SingleOrDefault(o => o.OrderID == id);
+
+            if (order != null && order.OrderDetails != null)
+            {
+                // Lấy dịch vụ giỏ hàng thông qua Session
+                var cartService = new CartService(Session);
+
+                foreach (var detail in order.OrderDetails)
+                {
+                    if (detail.Product != null)
+                    {
+                        cartService.GetCart().AddItem(
+                            detail.Product.ProductID,
+                            detail.Product.ProductImage,
+                            detail.Product.ProductName,
+                            detail.UnitPrice,
+                            detail.Quantity,
+                            detail.Product.Category != null ? detail.Product.Category.CategoryName : string.Empty
+                        );
+                    }
+                }
+            }
+
+            // Chuyển hướng sang trang Thanh toán (Checkout) nằm trong thư mục Order
+            return RedirectToAction("Checkout", "Order");
+        }
     }
 }

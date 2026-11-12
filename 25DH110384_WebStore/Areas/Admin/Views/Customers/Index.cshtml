@@ -1,32 +1,130 @@
 ﻿@model IEnumerable<_25DH110384_WebStore.Models.Customer>
+
 @{
     ViewBag.Title = "Danh sách khách hàng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="bg-success" style="padding: 10px;">DANH SÁCH KHÁCH HÀNG</h2>
-
-<table class="table table-bordered table-hover bg-info">
-    <tr class="bg-success">
-        <th>Mã KH</th>
-        <th>Họ và tên</th>
-        <th>Số điện thoại</th>
-        <th>Email</th>
-        <th>Địa chỉ</th>
-        <th>Thao tác</th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.CustomerID)</td>
-            <td>@Html.DisplayFor(modelItem => item.CustomerName)</td>
-            <td>@Html.DisplayFor(modelItem => item.CustomerPhone)</td>
-            <td>@Html.DisplayFor(modelItem => item.CustomerEmail)</td>
-            <td>@Html.DisplayFor(modelItem => item.CustomerAddress)</td>
-            <td>
-                @Html.ActionLink("Chi tiết", "Details", new { id = item.CustomerID }, new { @class = "btn btn-info btn-sm" })
-            </td>
-        </tr>
+<style>
+    .customer-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+        margin-top: 20px;
     }
-</table>
+
+    .customer-header {
+        background-color: #1e824c;
+        color: white;
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 1.3rem;
+    }
+
+    .custom-table {
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+        .custom-table th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 700;
+            border-bottom: 2px solid #dee2e6 !important;
+            padding: 12px !important;
+            vertical-align: middle !important;
+        }
+
+        .custom-table td {
+            vertical-align: middle !important;
+            padding: 12px !important;
+        }
+
+    .badge-id {
+        background-color: #e9ecef;
+        color: #495057;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+</style>
+
+<div class="customer-card">
+    <div class="customer-header">
+        <i class="fas fa-users" style="margin-right: 8px;"></i> DANH SÁCH KHÁCH HÀNG
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover custom-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 90px;">Mã KH</th>
+                    <th class="text-left" style="width: 200px;">Họ và tên</th>
+                    <th class="text-center" style="width: 130px;">Số điện thoại</th>
+                    <th class="text-left" style="width: 200px;">Email</th>
+                    <th class="text-left">Địa chỉ</th>
+                    <th class="text-center" style="width: 180px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <span class="badge-id">#@item.CustomerID</span>
+                            </td>
+                            <td class="text-left" style="font-weight: 600;">
+                                @(string.IsNullOrEmpty(item.CustomerName) ? "Chưa cập nhật" : item.CustomerName)
+                            </td>
+                            <td class="text-center">
+                                @(string.IsNullOrEmpty(item.CustomerPhone) ? "-" : item.CustomerPhone)
+                            </td>
+                            <td class="text-left">
+                                @(string.IsNullOrEmpty(item.CustomerEmail) ? "-" : item.CustomerEmail)
+                            </td>
+                            <td class="text-left">
+                                @(string.IsNullOrEmpty(item.CustomerAddress) ? "Chưa cập nhật" : item.CustomerAddress)
+                            </td>
+                            <td class="text-center">
+                                <div class="action-btns">
+                                    <!-- Nút Xem chi tiết -->
+                                    <a href="@Url.Action("Details", "Customers", new { area = "Admin", id = item.CustomerID })" class="btn btn-info btn-sm" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i> Chi tiết
+                                    </a>
+
+                                    <!-- Nút Xóa khách hàng -->
+                                    @using (Html.BeginForm("Delete", "Customers", new { area = "Admin", id = item.CustomerID }, FormMethod.Post, new { style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('CẢNH BÁO: Xóa khách hàng này sẽ xóa luôn toàn bộ Lịch sử mua hàng của họ. Bạn có chắc chắn muốn xóa không?');" title="Xóa tài khoản">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted" style="padding: 30px !important;">
+                            Chưa có khách hàng nào trong hệ thống.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

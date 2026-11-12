@@ -1,0 +1,74 @@
+﻿@model _25DH110384_WebStore.Models.User
+
+@{
+    ViewBag.Title = "Chi tiết Tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .admin-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .admin-header {
+        background-color: #1e824c;
+        color: white;
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .info-box {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 25px 30px;
+        margin: 25px;
+        line-height: 2.2;
+        font-size: 1.1rem;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin: 0 25px 25px 25px;
+        font-weight: bold;
+        color: #333;
+        text-decoration: none;
+        font-size: 1.1rem;
+    }
+
+        .back-link:hover {
+            color: #1e824c;
+            text-decoration: none;
+        }
+</style>
+
+<div class="admin-card">
+    <div class="admin-header">
+        <i class="fas fa-address-card" style="margin-right: 8px;"></i> THÔNG TIN CHI TIẾT TÀI KHOẢN
+    </div>
+
+    <div class="info-box">
+        <p style="margin-bottom: 20px;">
+            <strong>Tên đăng nhập (Username):</strong>
+            <span style="color: #1e824c; font-weight: bold;">@Model.Username</span>
+        </p>
+
+        <p style="margin-bottom: 0;">
+            <!-- Hiển thị trực tiếp mật khẩu từ CSDL thay vì dấu * -->
+            <strong>Mật khẩu:</strong>
+            <span style="color: #555;">@Model.Password</span>
+        </p>
+    </div>
+
+    <!-- Nút quay lại dạng text phẳng như thiết kế -->
+    <a href="@Url.Action("Index", "Users", new { area = "Admin" })" class="back-link">
+        <i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Quay lại danh sách
+    </a>
+</div>

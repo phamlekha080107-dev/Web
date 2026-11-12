@@ -142,7 +142,9 @@
                     </div>
                     <div>
                         @Html.ActionLink("Xem chi tiết", "OrderSuccess", "Order", new { id = order.OrderID }, new { @class = "btn btn-default btn-action" })
-                        <a href="@Url.Action("Index", "Cart")" class="btn btn-danger btn-action">Mua lại</a>
+                        <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID })" class="btn btn-danger btn-action">
+                            Mua lại
+                        </a>
                     </div>
                 </div>
             </div>
