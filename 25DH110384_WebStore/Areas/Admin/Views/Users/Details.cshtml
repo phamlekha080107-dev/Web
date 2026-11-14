@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "Chi tiết Tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    // Lấy thông tin khách hàng liên kết với tài khoản này (nếu có)
+    var customerInfo = Model.Customers.FirstOrDefault();
 }
 
 <style>
@@ -34,6 +37,26 @@
         font-size: 1.1rem;
     }
 
+    .info-group {
+        margin-bottom: 15px;
+    }
+
+    .info-label {
+        font-weight: bold;
+        display: inline-block;
+        width: 180px;
+    }
+
+    .section-title {
+        color: #1e824c;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 5px;
+        text-transform: uppercase;
+    }
+
     .back-link {
         display: inline-block;
         margin: 0 25px 25px 25px;
@@ -55,19 +78,40 @@
     </div>
 
     <div class="info-box">
-        <p style="margin-bottom: 20px;">
-            <strong>Tên đăng nhập (Username):</strong>
-            <span style="color: #1e824c; font-weight: bold;">@Model.Username</span>
-        </p>
+        <!-- PHẦN 1: THÔNG TIN ĐĂNG NHẬP (Lấy từ bảng User) -->
+        <div class="section-title">Thông tin đăng nhập</div>
 
-        <p style="margin-bottom: 0;">
-            <!-- Hiển thị trực tiếp mật khẩu từ CSDL thay vì dấu * -->
-            <strong>Mật khẩu:</strong>
+        <div class="info-group">
+            <span class="info-label">Tên đăng nhập:</span>
+            <span style="color: #1e824c; font-weight: bold;">@Model.Username</span>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Mật khẩu:</span>
             <span style="color: #555;">@Model.Password</span>
-        </p>
+        </div>
+
+        
+
+        <!-- PHẦN 2: THÔNG TIN CÁ NHÂN (Lấy từ bảng Customer) -->
+        <div class="section-title" style="margin-top: 30px;">Thông tin cá nhân liên kết</div>
+
+        <div class="info-group">
+            <span class="info-label">Email:</span>
+            <span>@(customerInfo != null ? customerInfo.CustomerEmail : "Chưa có thông tin")</span>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Số điện thoại:</span>
+            <span>@(customerInfo != null ? customerInfo.CustomerPhone : "Chưa có thông tin")</span>
+        </div>
+
+        <div class="info-group" style="margin-bottom: 0;">
+            <span class="info-label">Địa chỉ:</span>
+            <span>@(customerInfo != null ? customerInfo.CustomerAddress : "Chưa có thông tin")</span>
+        </div>
     </div>
 
-    <!-- Nút quay lại dạng text phẳng như thiết kế -->
     <a href="@Url.Action("Index", "Users", new { area = "Admin" })" class="back-link">
         <i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Quay lại danh sách
     </a>

@@ -6,88 +6,253 @@
 }
 
 <style>
-    .accountbtn {
-        width: 275px;
-        height: 40px;
-        border: 1px solid #808080;
-        margin: 5px;
-        align-items: center;
+    .register-container {
+        max-width: 650px;
+        margin: 30px auto;
+        background: #ffffff;
+        padding: 30px 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        font-family: Arial, sans-serif;
     }
+
+    .register-title {
+        color: #e10b16;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        font-size: 1.5rem;
+    }
+
+    .register-subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+
+    .social-login {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn-social {
+        border: 1px solid #ced4da;
+        background: #fff;
+        padding: 6px 20px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #333;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+        .btn-social:hover {
+            background: #f8f9fa;
+        }
+
+    .divider-text {
+        text-align: center;
+        position: relative;
+        margin: 20px 0;
+        color: #777;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+
+    .section-heading {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #333;
+        margin-top: 20px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-custom {
+        flex: 1;
+        margin-bottom: 15px;
+    }
+
+        .form-group-custom label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #444;
+            margin-bottom: 5px;
+        }
+
+    .form-control-custom {
+        width: 100%;
+        height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+        .form-control-custom:focus {
+            border-color: #e10b16;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(225, 11, 22, 0.1);
+        }
+
+    .gender-group {
+        display: flex;
+        gap: 20px;
+        margin-top: 5px;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+        .gender-group label {
+            font-weight: normal;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .btn-submit-reg {
+        background-color: #e10b16;
+        border: 1px solid #e10b16;
+        color: white;
+        padding: 10px 25px;
+        font-weight: 700;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+        .btn-submit-reg:hover {
+            background-color: #c80913;
+        }
+
+    .btn-back-login {
+        background-color: #fff;
+        border: 1px solid #e10b16;
+        color: #e10b16;
+        padding: 10px 25px;
+        font-weight: 700;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-back-login:hover {
+            background-color: #fff5f5;
+            color: #c80913;
+            text-decoration: none;
+        }
 </style>
 
-<div>
+<div class="register-container">
     @using (Html.BeginForm("Register", "Account", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <div class="form-horizontal">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                <h2 class="col-md-6"> Đăng ký tài khoản</h2>
-            </div>
-            @* Tên đăng nhập *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.Username, new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            @* mật khẩu *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.Password, new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            @* Xác nhận mật khẩu *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.ConfirmPassword, new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.ConfirmPassword)
-                </div>
-            </div>
-            @* Họ tên khách hàng *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.CustomerName, new { @class = "control-label col-md-2" })
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CustomerName)
-                </div>
-            </div>
-            @* SĐT khách hàng *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.CustomerPhone, new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.CustomerPhone, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CustomerPhone)
-                </div>
-            </div>
-            @* Email khách hàng *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.CustomerEmail, new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.CustomerEmail, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CustomerEmail)
-                </div>
-            </div>
-            @* Địa chỉ khách hàng *@
-            <div class="form-group">
-                @Html.LabelFor(model => model.CustomerAddress, new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.CustomerAddress, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CustomerAddress)
-                </div>
-            </div>
+        <h2 class="register-title">Đăng ký trở thành SMEMBER</h2>
+        <div class="register-subtitle">Đăng ký bằng tài khoản mạng xã hội</div>
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-4">
-                    <input type="submit" value="Đăng ký" class="btn btn-info accountbtn" /><br />
-                    <p>Bạn Đã Có Tài Khoản? <a href="@Url.Action("Login", "Account", null)">Đăng nhập </a></p>
-                </div>
+        <div class="social-login">
+            <a href="#" class="btn-social"><i class="fab fa-google" style="color: #db4437;"></i> Google</a>
+            <a href="#" class="btn-social"><i class="fab fa-facebook-f" style="color: #4267B2;"></i> Zalo</a>
+        </div>
+
+        <div class="divider-text">Hoặc điền thông tin sau</div>
+
+        <!-- THÔNG TIN CÁ NHÂN -->
+        <div class="section-heading">Thông tin cá nhân</div>
+
+        <div class="form-row">
+            <div class="form-group-custom">
+                @Html.LabelFor(model => model.CustomerName, "Họ và tên")
+                @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control-custom", placeholder = "Nhập họ và tên của bạn" } })
+                @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
             </div>
+            <div class="form-group-custom">
+                <label>Ngày sinh</label>
+                <input type="date" class="form-control-custom" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom">
+                @Html.LabelFor(model => model.CustomerPhone, "Số điện thoại")
+                @Html.EditorFor(model => model.CustomerPhone, new { htmlAttributes = new { @class = "form-control-custom", placeholder = "Nhập số điện thoại của bạn" } })
+                @Html.ValidationMessageFor(model => model.CustomerPhone, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
+            </div>
+            <div class="form-group-custom">
+                @Html.LabelFor(model => model.CustomerEmail, "Email")
+                @Html.EditorFor(model => model.CustomerEmail, new { htmlAttributes = new { @class = "form-control-custom", placeholder = "Nhập email (không bắt buộc)" } })
+                @Html.ValidationMessageFor(model => model.CustomerEmail, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            @Html.LabelFor(model => model.CustomerAddress, "Địa chỉ")
+            @Html.EditorFor(model => model.CustomerAddress, new { htmlAttributes = new { @class = "form-control-custom", placeholder = "Nhập địa chỉ nhận hàng" } })
+            @Html.ValidationMessageFor(model => model.CustomerAddress, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
+        </div>
+
+        <div class="form-group-custom">
+            <label>Giới tính</label>
+            <div class="gender-group">
+                <label><input type="radio" name="Gender" value="Nam" checked /> Nam</label>
+                <label><input type="radio" name="Gender" value="Nữ" /> Nữ</label>
+                <label><input type="radio" name="Gender" value="Khác" /> Khác</label>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN ĐĂNG NHẬP -->
+        <div class="section-heading">Thông tin đăng nhập</div>
+
+        <div class="form-group-custom">
+            @Html.LabelFor(model => model.Username, "Tên đăng nhập")
+            @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control-custom", placeholder = "Nhập tên đăng nhập" } })
+            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom">
+                @Html.LabelFor(model => model.Password, "Mật khẩu")
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control-custom", placeholder = "Nhập mật khẩu", type = "password" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
+            </div>
+            <div class="form-group-custom">
+                @Html.LabelFor(model => model.ConfirmPassword, "Nhập lại mật khẩu")
+                @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control-custom", placeholder = "Nhập lại mật khẩu" })
+                @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger", @style = "font-size:0.8rem;" })
+            </div>
+        </div>
+
+        <!-- NÚT BẤM -->
+        <div class="action-buttons">
+            <input type="submit" value="Hoàn tất đăng ký" class="btn-submit-reg" />
+            <a href="@Url.Action("Login", "Account", null)" class="btn-back-login">Quay lại đăng nhập</a>
         </div>
     }
 </div>

@@ -36,14 +36,20 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
 
             if (minPrice.HasValue)
             {
-                model.MinPrice = minPrice.Value;
-                products = products.Where(p=> p.ProductPrice >= minPrice.Value);
+                // Nếu giá trị nhỏ hơn 1000 (ví dụ người dùng nhập 20, 50, 100...), ta tự động nhân với 1000
+                // Nếu họ nhập từ 1000 trở lên (ví dụ 20000), giữ nguyên giá trị đó.
+                decimal adjustedMin = minPrice.Value < 1000 ? minPrice.Value * 1000 : minPrice.Value;
+
+                model.MinPrice = adjustedMin;
+                products = products.Where(p => p.ProductPrice >= adjustedMin);
             }
 
             if (maxPrice.HasValue)
             {
-                model.MaxPrice = maxPrice.Value;
-                products = products.Where(p => p.ProductPrice >= maxPrice.Value);
+                decimal adjustedMax = maxPrice.Value < 1000 ? maxPrice.Value * 1000 : maxPrice.Value;
+
+                model.MaxPrice = adjustedMax;
+                products = products.Where(p => p.ProductPrice <= adjustedMax);
             }
 
             // Áp dụng sắp xếp dựa trên lựa chọn của người dùng

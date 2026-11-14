@@ -186,7 +186,7 @@ namespace _25DH110384_WebStore.Controllers
             return View(orders);
         }
 
-        // Mua lại đơn hàng cũ -> Đưa vào giỏ hàng và chuyển thẳng đến trang Thanh toán
+        // Mua lại đơn hàng cũ -> Đưa vào giỏ hàng và chuyển đến trang Giỏ hàng để người dùng tùy chỉnh số lượng
         public ActionResult BuyAgain(int id)
         {
             // Kiểm tra đăng nhập
@@ -203,7 +203,7 @@ namespace _25DH110384_WebStore.Controllers
 
             if (order != null && order.OrderDetails != null)
             {
-                // Lấy dịch vụ giỏ hàng thông qua Session
+                // Lấy dịch vụ giỏ hàng thông quan Session
                 var cartService = new CartService(Session);
 
                 foreach (var detail in order.OrderDetails)
@@ -222,8 +222,8 @@ namespace _25DH110384_WebStore.Controllers
                 }
             }
 
-            // Chuyển hướng sang trang Thanh toán (Checkout) nằm trong thư mục Order
-            return RedirectToAction("Checkout", "Order");
+            // ĐÃ SỬA: Chuyển hướng sang trang Giỏ hàng (Cart/Index) thay vì trang Checkout
+            return RedirectToAction("Index", "Cart");
         }
     }
 }

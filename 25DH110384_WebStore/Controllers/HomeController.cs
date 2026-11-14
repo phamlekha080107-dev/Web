@@ -9,17 +9,17 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
 
-
 namespace _25DH110384_WebStore.Controllers
 {
     public class HomeController : Controller
     {
         private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
+
         public ActionResult Index(string searchTerm, int? page)
         {
-
             var model = new HomeProductVM();
             var products = db.Products.AsQueryable();
+
             // Tìm kiếm sản phẩm dựa trên từ khóa
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -29,15 +29,13 @@ namespace _25DH110384_WebStore.Controllers
                                               p.Category.CategoryName.Contains(searchTerm));
             }
 
-            // Đoạn code liên quan tới phân trang
-            // Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
             int pageNumber = page ?? 1;
-            int pageSize = 6;  // Số sản phẩm mỗi trang
+            int pageSize = 6;
 
-            // lấy top 10 sản phẩm bán chạy nhất
+            // Lấy top 10 sản phẩm bán chạy nhất
             model.FeaturedProducts = products.OrderByDescending(p => p.OrderDetails.Count()).Take(10).ToList();
 
-            // lấy 20 sản phẩm bán ế nhất và phân trang
+            // Lấy 20 sản phẩm bán ế nhất và phân trang
             model.NewProducts = products.OrderBy(p => p.OrderDetails.Count()).Take(20).ToPagedList(pageNumber, pageSize);
 
             return View(model);
@@ -55,15 +53,13 @@ namespace _25DH110384_WebStore.Controllers
                 return HttpNotFound();
             }
 
-            // lấy tất cả các sản phẩm cùng danh mục
+            // Lấy tất cả các sản phẩm cùng danh mục
             var products = db.Products.Where(p => p.CategoryID == pro.CategoryID && p.ProductID != pro.ProductID).AsQueryable();
 
             ProductDetailVM model = new ProductDetailVM();
 
-            // Đoạn code liên quan tới phân trang
-            // Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
             int pageNumber = page ?? 1;
-            int pageSize = model.PageSize; // Số sản phẩm mỗi trang
+            int pageSize = model.PageSize;
             model.product = pro;
             model.RelatedProducts = products.OrderBy(p => p.ProductID).Take(8).ToPagedList(pageNumber, pageSize).ToList();
             model.TopProducts = products.OrderByDescending(p => p.OrderDetails.Count()).Take(8).ToPagedList(pageNumber, pageSize);
@@ -76,46 +72,38 @@ namespace _25DH110384_WebStore.Controllers
             return View(model);
         }
 
-
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
 
         // ================= ĐĂNG NHẬP (LOGIN) =================
 
-        // GET: Categories1/Login
         [HttpGet]
         public ActionResult Login()
         {
             return View();
         }
 
-        // POST: Categories1/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginVM model)
         {
             if (ModelState.IsValid)
             {
-                // Kiểm tra thông tin tài khoản trong cơ sở dữ liệu (User/Customer)
                 var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
                 if (user != null)
                 {
-                    // Lưu thông tin session đăng nhập thành công
                     Session["Username"] = user.Username;
                     Session["UserRole"] = user.UserRole;
 
-                    // Chuyển hướng về trang chủ sau khi đăng nhập thành công
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -126,15 +114,122 @@ namespace _25DH110384_WebStore.Controllers
             return View(model);
         }
 
-        // ====================================================
+        // ================= DANH MỤC ĐIỆN THOẠI =================
 
-
-
-        public ActionResult PageDienThoai()
+        // GET: Home/PageDienThoai
+        public ActionResult PageDienThoai(string searchTerm, string sortOrder, int? page)
         {
-            return View(db.Categories.ToList());
+            var model = new HomeProductVM();
+
+            var products = db.Products
+                .Include("Category")
+                .Where(p => p.Category.CategoryName.Trim() == "Điện thoại")
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                model.SearchTerm = searchTerm;
+                products = products.Where(p =>
+                    p.ProductName.Contains(searchTerm) ||
+                    p.ProductDescription.Contains(searchTerm));
+            }
+
+            ViewBag.CurrentSort = sortOrder;
+            switch (sortOrder)
+            {
+                case "asc":
+                    products = products.OrderBy(p => p.ProductPrice);
+                    break;
+                case "desc":
+                    products = products.OrderByDescending(p => p.ProductPrice);
+                    break;
+                default:
+                    products = products.OrderByDescending(p => p.ProductID);
+                    break;
+            }
+
+            int pageNumber = page ?? 1;
+            int pageSize = 8;
+            model.NewProducts = products.ToPagedList(pageNumber, pageSize);
+
+            return View(model);
         }
 
 
+        public ActionResult PagePhuKien(string searchTerm, string sortOrder, int? page)
+        {
+            var model = new HomeProductVM();
+
+            var products = db.Products
+                .Include("Category")
+                .Where(p => p.Category.CategoryName.Trim() == "Phụ kiện")
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                model.SearchTerm = searchTerm;
+                products = products.Where(p =>
+                    p.ProductName.Contains(searchTerm) ||
+                    p.ProductDescription.Contains(searchTerm));
+            }
+
+            ViewBag.CurrentSort = sortOrder;
+            switch (sortOrder)
+            {
+                case "asc":
+                    products = products.OrderBy(p => p.ProductPrice);
+                    break;
+                case "desc":
+                    products = products.OrderByDescending(p => p.ProductPrice);
+                    break;
+                default:
+                    products = products.OrderByDescending(p => p.ProductID);
+                    break;
+            }
+
+            int pageNumber = page ?? 1;
+            int pageSize = 8;
+            model.NewProducts = products.ToPagedList(pageNumber, pageSize);
+
+            return View(model);
+        }
+
+        public ActionResult PageThietBi(string searchTerm, string sortOrder, int? page)
+        {
+            var model = new HomeProductVM();
+
+            var products = db.Products
+                .Include("Category")
+                .Where(p => p.Category.CategoryName.Trim() == "Phụ kiện")
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                model.SearchTerm = searchTerm;
+                products = products.Where(p =>
+                    p.ProductName.Contains(searchTerm) ||
+                    p.ProductDescription.Contains(searchTerm));
+            }
+
+            ViewBag.CurrentSort = sortOrder;
+            switch (sortOrder)
+            {
+                case "asc":
+                    products = products.OrderBy(p => p.ProductPrice);
+                    break;
+                case "desc":
+                    products = products.OrderByDescending(p => p.ProductPrice);
+                    break;
+                default:
+                    products = products.OrderByDescending(p => p.ProductID);
+                    break;
+            }
+
+            int pageNumber = page ?? 1;
+            int pageSize = 8;
+            model.NewProducts = products.ToPagedList(pageNumber, pageSize);
+
+            return View(model);
+        }
     }
 }

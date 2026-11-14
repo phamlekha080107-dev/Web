@@ -1,42 +1,50 @@
-﻿﻿@model _25DH110384_WebStore.Models.ViewModel.HomeProductVM
+﻿@model _25DH110384_WebStore.Models.ViewModel.HomeProductVM
 @using PagedList.Mvc;
-<link rel="stylesheet" href="~/Areas/Customer/Content/Index.css?v=2" />
 
 @if (Model.NewProducts != null && Model.NewProducts.Any())
 {
-    <section class="container-fluid listProduct">
-        <div class="section-heading"><span></span><span></span><h2>SẢN PHẨM KHÁC</h2><span></span><span></span></div>
-        <div class="tools">
-            <p>Những sản phẩm mới nhất</p>
-            <input id="search-input" type="search" placeholder="Tìm sản phẩm..." oninput="searchProducts()">
+    <div class="section-container" id="products">
+        <div class="section-header">
+            <div class="section-title">
+                <span class="section-subtitle">— SẢN PHẨM KHÁC</span>
+                <h2>Dành riêng cho bạn</h2>
+            </div>
         </div>
-        <div class="products" id="product-list">
+
+        <div class="product-grid" id="product-list">
             @foreach (var product in Model.NewProducts)
             {
-                <div class="lproduct-item">
-                    <div>
-                        <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
-                            <img src="@Html.DisplayFor(modelItem => product.ProductImage)" />
-                        </a>
+                <div class="product-card">
+                    <i class="far wishlist-icon"></i>
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        <img src="@Html.DisplayFor(m => product.ProductImage)" class="product-img" />
+                    </a>
+                    <h3 class="product-title">@Html.DisplayFor(m => product.ProductName)</h3>
+                    <div class="product-rating">
+                        ★★★★☆ <span style="color:#aaa;">(Đã bán: @product.OrderDetails.Count)</span>
                     </div>
-                    <div>
-                        <p class="prodPrice">@Html.DisplayFor(modelItem => product.ProductPrice)</p>
-                        <p class="prodName">@Html.DisplayFor(modelItem => product.ProductName)</p>
-                        <p class="prodSale">
-                            Đã bán:&nbsp;@Html.DisplayFor(modelItem => product.OrderDetails.Count)
-                        </p>
+                    <div class="product-price">
+                        @String.Format("{0:N0}", product.ProductPrice) đ
                     </div>
+                    <a href="@Url.Action("AddToCart", "Cart", new { id = product.ProductID })" class="btn-add-cart" style="display: block; text-align: center; box-sizing: border-box;">
+                        <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                    </a>
                 </div>
             }
         </div>
-    </section> <!-- <-- THÊM THẺ ĐÓNG NÀY VÀO -->
 
-    <!-- Hiển thị phân trang -->
-    <div class="pagination-container">
-        @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
+        <!-- Hiển thị phân trang -->
+        <div class="pagination-container">
+            @Html.PagedListPager(Model.NewProducts, page => Url.Action(
+                ViewContext.RouteData.Values["action"].ToString(),
+                new { page, searchTerm = Model.SearchTerm }
+            ))
+        </div>
     </div>
 }
 else
 {
-    <p>Không tìm được sản phẩm nào phù hợp.</p>
+    <div class="section-container">
+        <p style="text-align:center; color:#666; font-size: 16px;">Không tìm được sản phẩm nào phù hợp.</p>
+    </div>
 }

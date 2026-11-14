@@ -3,79 +3,107 @@
 @{
     ViewBag.Title = "Giỏ hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Tính tổng số lượng sản phẩm trong giỏ hàng
+    int totalQuantity = Model != null && Model.Items != null ? Model.Items.Sum(x => x.Quantity) : 0;
+    decimal totalPrice = Model != null && Model.Items != null ? Model.Items.Sum(x => x.TotalPrice) : 0;
 }
 
 <style>
     .cart-container {
         background-color: #f8f9fa;
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 8px;
         margin-top: 10px;
+        font-family: Arial, sans-serif;
     }
 
     .cart-section {
         background-color: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-        padding: 20px;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        padding: 15px 20px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    .category-title {
-        color: #2b2b2b;
-        font-size: 1.2rem;
+    .cart-header-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1rem;
         font-weight: 700;
+        color: #333;
+        text-transform: uppercase;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 12px;
         margin-bottom: 15px;
-        border-bottom: 2px solid #e9ecef;
-        padding-bottom: 8px;
     }
+
+    .btn-clear-all {
+        color: #dc3545;
+        font-size: 0.85rem;
+        font-weight: normal;
+        text-decoration: none;
+    }
+
+        .btn-clear-all:hover {
+            text-decoration: underline;
+        }
 
     .cart-table {
         width: 100%;
         margin-bottom: 0;
     }
 
-        .cart-table th {
-            background-color: #f1f3f5;
-            color: #495057;
-            font-weight: 600;
-            border-bottom: none !important;
-            vertical-align: middle !important;
-        }
-
         .cart-table td {
             vertical-align: middle !important;
-            border-top: 1px solid #dee2e6;
+            border-top: none !important;
+            border-bottom: 1px solid #f5f5f5;
+            padding: 12px 0;
         }
 
     .product-img {
-        max-height: 75px;
-        width: auto;
-        border-radius: 8px;
-        object-fit: cover;
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        padding: 2px;
     }
 
     .product-name {
-        font-weight: 600;
+        font-weight: 500;
         color: #333;
+        font-size: 0.95rem;
+    }
+
+    .product-price {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-top: 4px;
     }
 
     .quantity-control {
-        display: flex;
+        display: inline-flex;
         align-items: center;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        overflow: hidden;
     }
 
     .btn-qty {
-        width: 28px;
-        height: 28px;
-        border: 1px solid #ced4da;
-        background-color: #fff;
-        border-radius: 4px;
+        width: 26px;
+        height: 26px;
+        border: none;
+        background-color: #f8f9fa;
         font-weight: bold;
-        line-height: 1;
         cursor: pointer;
-        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;
     }
 
         .btn-qty:hover {
@@ -83,63 +111,113 @@
         }
 
     .input-qty {
-        width: 45px;
-        height: 28px;
+        width: 35px;
+        height: 26px;
         text-align: center;
-        border: 1px solid #ced4da;
-        margin: 0 4px;
-        border-radius: 4px;
+        border: none;
+        border-left: 1px solid #ced4da;
+        border-right: 1px solid #ced4da;
+        font-size: 0.9rem;
         font-weight: 600;
+        background: #fff;
     }
 
     .btn-delete-item {
-        color: #dc3545;
-        font-size: 1.1rem;
-        transition: color 0.2s ease;
-        padding: 5px 10px;
-        display: inline-block;
+        color: #adb5bd;
+        font-size: 1rem;
+        transition: color 0.2s;
     }
 
         .btn-delete-item:hover {
-            color: #a71d2a;
+            color: #dc3545;
         }
 
-    .btn-clear-all {
-        color: #dc3545;
-        font-size: 1.1rem;
-        transition: transform 0.2s ease;
-    }
-
-        .btn-clear-all:hover {
-            transform: scale(1.15);
-        }
-
+    /* Summary Card */
     .summary-card {
-        position: sticky;
-        top: 100px;
-    }
-
-    .total-price {
-        font-size: 1.3rem;
-        color: #dc3545;
-        font-weight: bold;
-    }
-
-    .cart-button {
-        width: 100%;
-        padding: 10px;
-        font-weight: 600;
+        background: #fff;
+        border: 1px solid #e5e5e5;
         border-radius: 6px;
-        margin-top: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        padding: 20px;
     }
 
-    .btn-group-actions {
-        margin-top: 15px;
-        display: flex;
-        gap: 10px;
+    .summary-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #333;
+        text-transform: uppercase;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 12px;
+        margin-bottom: 15px;
     }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .summary-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 15px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .summary-total-label {
+        font-weight: 700;
+        color: #333;
+        text-transform: uppercase;
+        font-size: 1rem;
+    }
+
+    .summary-total-price {
+        font-size: 1.25rem;
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .vat-note {
+        font-size: 0.8rem;
+        color: #777;
+        text-align: right;
+        margin-bottom: 20px;
+    }
+
+    .btn-checkout {
+        background-color: #e10b16;
+        border-color: #e10b16;
+        color: white;
+        width: 100%;
+        padding: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-radius: 4px;
+        font-size: 0.95rem;
+    }
+
+        .btn-checkout:hover {
+            background-color: #c80913;
+            border-color: #c80913;
+            color: white;
+        }
+
+    .btn-continue-shopping {
+        display: block;
+        text-align: center;
+        margin-top: 12px;
+        color: #e10b16;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+        .btn-continue-shopping:hover {
+            text-decoration: underline;
+        }
 </style>
 
 <script language="JavaScript">
@@ -166,108 +244,98 @@
     }
 </script>
 
-<div class="cart-container">
-    <h2 style="font-weight:700; margin-bottom: 20px;">GIỎ HÀNG CỦA BẠN</h2>
-
+<div class="container cart-container">
     @if (Model == null || !Model.Items.Any())
     {
         <div class="cart-section text-center" style="padding: 40px 20px;">
-            <i class="fas fa-shopping-basket fa-4x text-muted" style="margin-bottom: 15px;"></i>
-            <h4>Bạn chưa có sản phẩm nào trong giỏ hàng.</h4>
-
-            <!-- THÊM BỘ NÚT BẤM KHI GIỎ HÀNG TRỐNG -->
-            <div style="margin-top: 25px; display: flex; justify-content: center; gap: 15px;">
-                @Html.ActionLink("Tiếp tục mua sắm", "Index", "Home", null, new { @class = "btn btn-warning btn-lg", style = "font-weight:600;" })
-                <a href="@Url.Action("MyOrder", "Order")" class="btn btn-info btn-lg" style="font-weight:600;">
-                    <i class="fas fa-receipt" style="margin-right: 5px;"></i> Đơn hàng đã mua
-                </a>
+            <i class="fas fa-shopping-cart fa-3x text-muted" style="margin-bottom: 15px;"></i>
+            <h4>Giỏ hàng của bạn đang trống</h4>
+            <div style="margin-top: 20px;">
+                @Html.ActionLink("← Tiếp tục mua hàng", "Index", "Home", null, new { @class = "btn btn-danger", style = "font-weight:600;" })
             </div>
         </div>
     }
     else
     {
         <div class="row">
+            <!-- CỘT DANH SÁCH SẢN PHẨM BÊN TRÁI -->
             <div class="col-md-8">
-                @foreach (var categoryGroup in Model.GroupedItems)
-                {
-                    <div class="cart-section">
-                        <div class="category-title">
-                            <i class="fas fa-folder-open text-primary" style="margin-right: 8px;"></i>@categoryGroup.Key
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table cart-table">
-                                <thead>
+                <div class="cart-section">
+                    <div class="cart-header-title">
+                        <span>GIỎ HÀNG (@totalQuantity SẢN PHẨM)</span>
+                        <a href="@Url.Action("ClearCart", "Cart", null)" class="btn-clear-all" onclick="return confirm('Bạn có chắc muốn xóa tất cả sản phẩm khỏi giỏ hàng?');">Xóa tất cả</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table cart-table">
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
                                     <tr>
-                                        <th colspan="2">Sản phẩm</th>
-                                        <th style="width: 130px;">Số lượng</th>
-                                        <th>Đơn giá</th>
-                                        <th>Thành tiền</th>
-                                        <th class="text-center" style="width: 60px;">
-                                            <a href="@Url.Action("ClearCart", "Cart", null)" class="btn-clear-all" title="Xóa tất cả mặt hàng trong giỏ" onclick="return confirm('Bạn có chắc muốn xóa tất cả sản phẩm khỏi giỏ hàng?');">
+                                        <td style="width: 75px;">
+                                            <img src="@item.ProductImage" alt="@item.ProductName" class="product-img" />
+                                        </td>
+                                        <td>
+                                            <div class="product-name">@item.ProductName</div>
+                                            <div class="product-price">@item.UnitPrice.ToString("N0")đ</div>
+                                        </td>
+                                        <td style="width: 120px;" class="text-center">
+                                            <div class="quantity-control">
+                                                <button type="button" class="btn-qty" onclick="cartUpdateQuantity(@item.ProductID, @item.Quantity - 1)">-</button>
+                                                <input type="text" class="input-qty" value="@item.Quantity" readonly />
+                                                <button type="button" class="btn-qty" onclick="cartUpdateQuantity(@item.ProductID, @item.Quantity + 1)">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" style="width: 40px;">
+                                            <a href="@Url.Action("RemoveFromCart", "Cart", new { id = item.ProductID })" class="btn-delete-item" title="Xóa" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?');">
                                                 <i class="fas fa-trash-alt"></i>
                                             </a>
-                                        </th>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in categoryGroup)
-                                    {
-                                        <tr>
-                                            <td style="width: 90px;">
-                                                <img src="@item.ProductImage" alt="@item.ProductName" class="product-img" />
-                                            </td>
-                                            <td class="product-name">@item.ProductName</td>
-                                            <td>
-                                                <div class="quantity-control">
-                                                    <button type="button" class="btn-qty" onclick="cartUpdateQuantity(@item.ProductID, @item.Quantity - 1)">-</button>
-                                                    <input type="number" class="input-qty" value="@item.Quantity" min="1" max="100" readonly />
-                                                    <button type="button" class="btn-qty" onclick="cartUpdateQuantity(@item.ProductID, @item.Quantity + 1)">+</button>
-                                                </div>
-                                            </td>
-                                            <td style="font-weight: 500;">@item.UnitPrice.ToString("N0") đ</td>
-                                            <td style="font-weight: 600; color: #28a745;">@item.TotalPrice.ToString("N0") đ</td>
-                                            <td class="text-center">
-                                                <a href="@Url.Action("RemoveFromCart", "Cart", new { id = item.ProductID })" class="btn-delete-item" title="Xóa sản phẩm này" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?');">
-                                                    <i class="fas fa-times-circle"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                }
-
-                <!-- THÊM NÚT XEM ĐƠN HÀNG ĐÃ MUA BÊN DƯỚI -->
-                <div class="btn-group-actions">
-                    @Html.ActionLink("← Tiếp tục mua hàng", "Index", "Home", null, new { @class = "btn btn-outline-secondary btn-lg", style = "font-weight: 600;" })
-                    <a href="@Url.Action("MyOrder", "Order")" class="btn btn-info btn-lg" style="font-weight: 600;">
-                        <i class="fas fa-receipt" style="margin-right: 5px;"></i> Đơn hàng đã mua
-                    </a>
                 </div>
             </div>
 
+            <!-- CỘT TÓM TẮT ĐƠN HÀNG BÊN PHẢI -->
             <div class="col-md-4">
-                <div class="cart-section summary-card">
-                    <h4 style="font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">TÓM TẮT ĐƠN HÀNG</h4>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span>Tổng tiền hàng:</span>
-                        <span class="total-price">@Model.Items.Sum(x => x.TotalPrice).ToString("N0") đ</span>
+                <div class="summary-card">
+                    <div class="summary-title">THÔNG TIN ĐƠN HÀNG</div>
+
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span style="font-weight: 600; color: #333;">@totalPrice.ToString("N0")đ</span>
                     </div>
-                    <hr />
+
+                    <div class="summary-row">
+                        <span>Giảm giá:</span>
+                        <span style="font-weight: 600; color: #333;">0đ</span>
+                    </div>
+
+                    <div class="summary-total-row">
+                        <span class="summary-total-label">Tổng tiền:</span>
+                        <span class="summary-total-price">@totalPrice.ToString("N0")đ</span>
+                    </div>
+                    <div class="vat-note">(Đã bao gồm VAT)</div>
+
                     <div>
-                        @Html.ActionLink("Tiến hành Mua hàng", "Checkout", "Order", null, new { @class = "btn btn-danger cart-button btn-lg" })
+                        @Html.ActionLink("Nhập thông tin giao hàng", "Checkout", "Order", null, new { @class = "btn btn-checkout" })
+                    </div>
+
+                    <div>
+                        @Html.ActionLink("← Tiếp tục mua hàng", "Index", "Home", null, new { @class = "btn-continue-shopping" })
                     </div>
                 </div>
             </div>
         </div>
-    }
 
-    @if (Model != null && Model.Items.Any())
-    {
-        <div class="cart-section" style="margin-top: 25px;">
-            @Html.Partial("PVSimilarProduct", Model)
-        </div>
+        if (Model != null && Model.Items.Any())
+        {
+            <div class="cart-section" style="margin-top: 10px;">
+                @Html.Partial("PVSimilarProduct", Model)
+            </div>
+        }
     }
 </div>

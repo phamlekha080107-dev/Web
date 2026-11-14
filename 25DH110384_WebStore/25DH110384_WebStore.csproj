@@ -267,7 +267,6 @@
     <Content Include="Views\Shared\PVRelatedProduct.cshtml" />
     <Content Include="Views\Shared\PVTopProduct.cshtml" />
     <Content Include="Views\Home\PageDienThoai.cshtml" />
-    <Content Include="Views\Home\PageHome.cshtml" />
     <Content Include="Areas\Admin\Views\WebHome\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Categories\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Categories\Details.cshtml" />
@@ -310,6 +309,8 @@
     <Content Include="Views\Home\ProductDetails.cshtml" />
     <Content Include="Views\Order\MyOrder.cshtml" />
     <Content Include="Views\Account\ProfileInfo.cshtml" />
+    <Content Include="Views\Home\PagePhuKien.cshtml" />
+    <Content Include="Views\Home\PageThietBi.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

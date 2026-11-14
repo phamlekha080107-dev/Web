@@ -1,89 +1,412 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.LoginVM
 
 @{
-    ViewBag.Title = "Đăng nhập";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
-<style>
-    .login-container {
-        max-width: 600px;
-        margin: 40px auto;
-        background: #fff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.08);
-    }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - PHONE & ACCES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    .login-title {
-        text-align: center;
-        margin-bottom: 25px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .accountbtn {
-        width: 100%;
-        height: 45px;
-        border: none;
-        background-color: #5bc0de;
-        color: white;
-        font-weight: bold;
-        border-radius: 5px;
-        transition: background 0.3s ease;
-    }
-
-        .accountbtn:hover {
-            background-color: #31b0d5;
-            color: white;
+    <style>
+        :root {
+            --primary-green: #0b4d3c;
+            --accent-green: #1a8f6d;
+            --card-bg: #fbf8f3;
+            --text-dark: #1e2421;
+            --text-muted: #6e7370;
         }
 
-    .register-link {
-        text-align: center;
-        margin-top: 15px;
-    }
-</style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<div class="container">
-    <div class="login-container">
-        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
- 
-        {
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            width: 100%;
+            /* Ảnh nền chủ đề điện thoại thông minh */
+            background-image: url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1920&q=85');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-            <h2 class="login-title">ĐĂNG NHẬP HỆ THỐNG</h2>
+            /* Lớp phủ tối nhẹ bên trái giúp chữ trắng nổi bật rõ nét */
+            body::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, rgba(10, 25, 20, 0.78) 0%, rgba(10, 25, 20, 0.45) 55%, rgba(10, 25, 20, 0.2) 100%);
+                z-index: 1;
+            }
 
-            @* Tên đăng nhập *@
-            <div class="form-group row">
-                @Html.LabelFor(m => m.Username, new { @class = "control-label col-md-3 font-weight-bold" })
-                <div class="col-md-9">
-                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Nhập tên đăng nhập..." })
+        .login-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1280px;
+            min-height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        /* CỘT BÊN TRÁI: LOGO & SLOGAN */
+        .left-showcase {
+            flex: 1;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 560px;
+        }
+
+        .brand-logo {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .left-showcase h1 {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        .left-showcase p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.88);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        /* CỘT BÊN PHẢI: THẺ FORM ĐĂNG NHẬP */
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 44px 40px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .login-card-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+
+        .alert-error {
+            background-color: #fdecea;
+            color: #c62828;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-field {
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a4f4c;
+            margin-bottom: 8px;
+        }
+
+        .input-box {
+            background-color: #ffffff;
+            border: 1px solid #ebe6dd;
+            border-radius: 12px;
+            height: 48px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+            .input-box:focus-within {
+                border-color: var(--accent-green);
+                box-shadow: 0 0 0 3px rgba(26, 143, 109, 0.12);
+            }
+
+            .input-box i.left-icon {
+                color: #7c827e;
+                font-size: 15px;
+                width: 16px;
+                text-align: center;
+            }
+
+        .custom-input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 14px;
+            color: var(--text-dark);
+            font-family: inherit;
+        }
+
+            .custom-input::placeholder {
+                color: #a3a8a5;
+            }
+
+        .toggle-password {
+            color: #7c827e;
+            cursor: pointer;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+            .toggle-password:hover {
+                color: var(--text-dark);
+            }
+
+        .text-danger {
+            display: block;
+            color: #d9534f;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .forgot-row {
+            text-align: right;
+            margin-top: -6px;
+            margin-bottom: 24px;
+        }
+
+            .forgot-row a {
+                font-size: 12px;
+                font-weight: 600;
+                color: #3a3f3c;
+                text-decoration: none;
+            }
+
+                .forgot-row a:hover {
+                    color: var(--accent-green);
+                    text-decoration: underline;
+                }
+
+        .btn-submit {
+            width: 100%;
+            height: 48px;
+            background-color: var(--accent-green);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.25s, transform 0.1s;
+        }
+
+            .btn-submit:hover {
+                background-color: var(--primary-green);
+            }
+
+            .btn-submit:active {
+                transform: scale(0.99);
+            }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #8c918e;
+            font-size: 13px;
+        }
+
+            .divider::before,
+            .divider::after {
+                content: "";
+                flex: 1;
+                border-bottom: 1px solid #e4dfd5;
+            }
+
+            .divider span {
+                padding: 0 14px;
+            }
+
+        .btn-back-home {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: 48px;
+            background-color: #ffffff;
+            color: var(--text-dark);
+            border: 1px solid #ebe6dd;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+            .btn-back-home:hover {
+                background-color: #f4f1ea;
+                border-color: #dcd5c9;
+            }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--text-dark);
+        }
+
+            .register-footer a {
+                color: var(--accent-green);
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .register-footer a:hover {
+                    text-decoration: underline;
+                }
+
+        /* RESPONSIVE CHO MÀN HÌNH NHỎ */
+        @@media (max-width: 960px) {
+            .login-wrapper {
+                flex-direction: column;
+                justify-content: center;
+                padding: 80px 20px 40px 20px;
+                text-align: center;
+            }
+
+            .brand-logo {
+                left: 50%;
+                transform: translateX(-50%);
+                top: 24px;
+            }
+
+            .left-showcase h1 {
+                font-size: 36px;
+            }
+
+            .left-showcase p {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <!-- LOGO GÓC TRÊN BÊN TRÁI -->
+        <a href="@Url.Action("Index", "Home")" class="brand-logo">
+            <i class="fas fa-shopping-bag"></i> PHONE & ACCES
+        </a>
+
+        <!-- NỘI DUNG GIỚI THIỆU BÊN TRÁI -->
+        <div class="left-showcase">
+            <h1>Công nghệ đỉnh cao<br />trong tầm tay bạn</h1>
+            <p>Đăng nhập để khám phá thế giới smartphone và phụ kiện chính hãng.</p>
+        </div>
+
+        <!-- KHUNG ĐĂNG NHẬP BÊN PHẢI -->
+        <div class="login-card">
+            <h2 class="login-card-title">Đăng nhập tài khoản</h2>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-circle"></i> @ViewBag.Error
+                </div>
+            }
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <!-- TÊN ĐĂNG NHẬP -->
+                <div class="form-field">
+                    <label class="field-label" for="Username">Tên đăng nhập</label>
+                    <div class="input-box">
+                        <i class="far fa-user left-icon"></i>
+                        @Html.TextBoxFor(m => m.Username, new { @class = "custom-input", placeholder = "Nhập tên đăng nhập của bạn" })
+                    </div>
                     @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
                 </div>
-            </div>
 
-            <br />
-
-            @* Mật khẩu *@
-            <div class="form-group row">
-                @Html.LabelFor(m => m.Password, new { @class = "control-label col-md-3 font-weight-bold" })
-                <div class="col-md-9">
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Nhập mật khẩu..." })
+                <!-- MẬT KHẨU -->
+                <div class="form-field">
+                    <label class="field-label" for="Password">Mật khẩu</label>
+                    <div class="input-box">
+                        <i class="fas fa-lock left-icon"></i>
+                        @Html.PasswordFor(m => m.Password, new { @class = "custom-input", id = "passwordInput", placeholder = "Nhập mật khẩu" })
+                        <i class="far fa-eye-slash toggle-password" id="togglePassword" title="Hiện/Ẩn mật khẩu"></i>
+                    </div>
                     @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
-            </div>
 
-            <br />
+                <!--<div class="forgot-row">-->
+                   @*<a href="#">Quên mật khẩu?</a>*@
+                <!--</div>-->
 
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-9">
-                    <input type="submit" value="Đăng nhập" class="btn accountbtn" />
-                    <div class="register-link">
-                        <p>Bạn chưa có tài khoản? <a href="@Url.Action("Register", "Account", null)">Đăng ký ngay</a></p>
-                    </div>
+                <button type="submit" class="btn-submit">Đăng nhập</button>
+
+                <div class="divider">
+                    <span>hoặc</span>
                 </div>
-            </div>
-        }
+
+                <a href="@Url.Action("Index", "Home")" class="btn-back-home">
+                    <i class="fas fa-home" style="color: var(--accent-green);"></i> Quay lại trang chủ
+                </a>
+
+                <div class="register-footer">
+                    Bạn chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a>
+                </div>
+            }
+        </div>
     </div>
-</div>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('passwordInput');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+
+</body>
+</html>
