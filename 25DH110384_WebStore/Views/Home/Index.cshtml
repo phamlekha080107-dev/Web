@@ -1,7 +1,7 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.HomeProductVM
 
 @{
-    Layout = null; // Hoặc đổi thành layout của bạn nếu có
+    Layout = null;
     var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
     int cartCount = (cart != null && cart.Items != null) ? cart.Items.Count() : 0;
     string currentAction = ViewContext.RouteData.Values["action"] != null
@@ -405,11 +405,64 @@
                 background: var(--primary-color);
             }
 
+        /* ================= PHÂN TRANG (PAGINATION) ================= */
         .pagination-container {
             display: flex;
             justify-content: center;
             margin-top: 40px;
+            margin-bottom: 20px;
         }
+
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+        }
+
+            .pagination li a,
+            .pagination li span {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 38px;
+                height: 38px;
+                padding: 0 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background-color: #fff;
+                color: var(--text-dark);
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.25s ease;
+                cursor: pointer;
+            }
+
+                .pagination li a:hover {
+                    background-color: #e6f4f0;
+                    border-color: var(--secondary-color);
+                    color: var(--primary-color);
+                }
+
+            .pagination li.active a,
+            .pagination li.active span {
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                color: #fff;
+                font-weight: 600;
+                box-shadow: 0 4px 10px rgba(26, 143, 109, 0.25);
+            }
+
+            .pagination li.disabled a,
+            .pagination li.disabled span {
+                color: #bbb;
+                background-color: #f8f9fa;
+                border-color: #eee;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
 
         /* USER DROPDOWN */
         .user-dropdown {
@@ -453,7 +506,6 @@
             transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.35s;
         }
 
-            /* Cầu nối lấp kín khe hở giữa nút tài khoản và menu */
             .user-dropdown-menu::before {
                 content: "";
                 position: absolute;
@@ -570,7 +622,6 @@
         <!-- KHUNG SLIDER ẢNH CHẠY DƯỚI NỀN -->
         <div class="hero-slider-container">
             <div class="hero-slider" id="heroSlider">
-                <!-- THAY ĐƯỜNG DẪN ẢNH CỦA BẠN VÀO src="" -->
                 <div class="slide-item">
                     <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=1200&q=80" alt="Banner 1">
                 </div>

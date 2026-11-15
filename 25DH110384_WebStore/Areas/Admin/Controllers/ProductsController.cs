@@ -19,7 +19,7 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
         private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
 
         // GET: Admin/Products
-        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder, int? page )
+        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder, int? page)
         {
             var model = new ProductSearchVM();
             var products = db.Products.AsQueryable();
@@ -31,15 +31,11 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
                         p.ProductName.Contains(searchTerm) ||
                         p.ProductDescription.Contains(searchTerm) ||
                         p.Category.CategoryName.Contains(searchTerm));
-
             }
 
             if (minPrice.HasValue)
             {
-                // Nếu giá trị nhỏ hơn 1000 (ví dụ người dùng nhập 20, 50, 100...), ta tự động nhân với 1000
-                // Nếu họ nhập từ 1000 trở lên (ví dụ 20000), giữ nguyên giá trị đó.
                 decimal adjustedMin = minPrice.Value < 1000 ? minPrice.Value * 1000 : minPrice.Value;
-
                 model.MinPrice = adjustedMin;
                 products = products.Where(p => p.ProductPrice >= adjustedMin);
             }
@@ -47,12 +43,10 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
             if (maxPrice.HasValue)
             {
                 decimal adjustedMax = maxPrice.Value < 1000 ? maxPrice.Value * 1000 : maxPrice.Value;
-
                 model.MaxPrice = adjustedMax;
                 products = products.Where(p => p.ProductPrice <= adjustedMax);
             }
 
-            // Áp dụng sắp xếp dựa trên lựa chọn của người dùng
             switch (sortOrder)
             {
                 case "name_asc":
@@ -71,20 +65,16 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
                     products = products.OrderByDescending(p => p.ProductPrice);
                     break;
 
-                default: // Mặc định sắp xếp theo tên
+                default:
                     products = products.OrderBy(p => p.ProductName);
                     break;
             }
             model.SortOrder = sortOrder;
-            // lay so trang mac dinh la 1
             int pageNumber = page ?? 1;
-            int pageSize = 5; //so san pham moi trang
+            int pageSize = 5;
 
             model.Products = products.ToPagedList(pageNumber, pageSize);
             return View(model);
-
-            //var products = db.Products.Include(p => p.Category);
-            //return View(products.ToList());
         }
 
         // GET: Admin/Products/Details/5
@@ -110,8 +100,6 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
         }
 
         // POST: Admin/Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductPrice,ProductImage,ProductDescription")] Product product)
@@ -144,8 +132,6 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
         }
 
         // POST: Admin/Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductPrice,ProductImage,ProductDescription")] Product product)
@@ -181,8 +167,19 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Product product = db.Products.Find(id);
-            db.Products.Remove(product);
-            db.SaveChanges();
+            if (product != null)
+            {
+                // Xóa các chi tiết đơn hàng đang chứa sản phẩm này trước
+                var relatedOrderDetails = db.OrderDetails.Where(od => od.ProductID == id).ToList();
+                if (relatedOrderDetails.Any())
+                {
+                    db.OrderDetails.RemoveRange(relatedOrderDetails);
+                }
+
+                // Sau đó xóa sản phẩm
+                db.Products.Remove(product);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 

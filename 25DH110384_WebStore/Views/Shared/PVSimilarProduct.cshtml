@@ -1,36 +1,225 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.Cart
 @using PagedList.Mvc
 
-<link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerHome.css" />
+<style>
+    .similar-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0b4d3c;
+        margin: 0 0 20px 0;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e6f4f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-<!-- Hiển thị danh sách sản phẩm -->
+    .similar-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .similar-card {
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 12px;
+        padding: 18px;
+        transition: all 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+    }
+
+        .similar-card:hover {
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+            border-color: #d0ebe3;
+        }
+
+    .similar-thumb {
+        width: 100%;
+        height: 170px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+        .similar-thumb img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.25s ease;
+        }
+
+    .similar-card:hover .similar-thumb img {
+        transform: scale(1.04);
+    }
+
+    .similar-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 8px 0;
+        line-height: 1.4;
+        height: 42px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+        .similar-name a:hover {
+            color: #1a8f6d;
+        }
+
+    .similar-rating {
+        color: #ffc107;
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .similar-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: #d93025;
+        margin-bottom: 14px;
+    }
+
+    .btn-similar-cart {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #1a8f6d;
+        color: #fff !important;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background-color 0.25s ease;
+    }
+
+        .btn-similar-cart:hover {
+            background-color: #0b4d3c;
+        }
+
+    /* PHÂN TRANG NẰM NGANG */
+    .similar-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 28px;
+    }
+
+        .similar-pagination .pagination {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+        }
+
+            .similar-pagination .pagination li a,
+            .similar-pagination .pagination li span {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                height: 36px;
+                padding: 0 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background-color: #fff;
+                color: #333;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s ease;
+            }
+
+                .similar-pagination .pagination li a:hover {
+                    background-color: #e6f4f0;
+                    border-color: #1a8f6d;
+                    color: #0b4d3c;
+                }
+
+            .similar-pagination .pagination li.active a,
+            .similar-pagination .pagination li.active span {
+                background-color: #1a8f6d;
+                border-color: #1a8f6d;
+                color: #fff;
+                font-weight: 600;
+                box-shadow: 0 3px 8px rgba(26, 143, 109, 0.25);
+            }
+
+            .similar-pagination .pagination li.disabled a,
+            .similar-pagination .pagination li.disabled span {
+                color: #bbb;
+                background-color: #f8f9fa;
+                border-color: #eee;
+                pointer-events: none;
+            }
+
+    @@media (max-width: 992px) {
+        .similar-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
 @if (Model.SimilarProducts != null && Model.SimilarProducts.Any())
 {
-    <section class="container-fluid listProduct">
-        <h2>Sản phẩm tương tự</h2>
-        <ul class="list-container">
+    <section>
+        <h2 class="similar-section-title">
+            <i class="fas fa-sparkles" style="color: #1a8f6d;"></i> Sản phẩm tương tự
+        </h2>
+
+        <ul class="similar-grid">
             @foreach (var product in Model.SimilarProducts)
             {
-                <li class="lproduct-item">
+                <li class="similar-card">
                     <div>
-                        <a href="@Url.Action("AddToCart", "Cart", new { id = product.ProductID })">
-                            <img src="@product.ProductImage" />
+                        <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })" class="similar-thumb">
+                            <img src="@product.ProductImage" alt="@product.ProductName" />
                         </a>
+
+                        <h3 class="similar-name">
+                            <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                                @product.ProductName
+                            </a>
+                        </h3>
+
+                        <div class="similar-rating">
+                            ★★★★★ <span style="color:#aaa;">(Đã bán: @(product.OrderDetails.Sum(od => (int?)od.Quantity) ?? 0))</span>
+                        </div>
                     </div>
-                    <div class="prodName" style="min-height:160px;">@product.ProductName </div>
-                    <div class="prodPrice">@product.ProductPrice.ToString("N0")  VND</div>
+
                     <div>
-                        @Html.ActionLink("Thêm vào giỏ hàng", "AddToCart", "Cart",
-                            new { id = product.ProductID },
-                            new { @class = "btn btn-info" })
+                        <div class="similar-price">
+                            @product.ProductPrice.ToString("#,##0").Replace(",", ".") đ
+                        </div>
+
+                        <a href="@Url.Action("AddToCart", "Cart", new { id = product.ProductID })" class="btn-similar-cart">
+                            <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                        </a>
                     </div>
                 </li>
             }
         </ul>
     </section>
 
-    <!-- Hiển thị phân trang -->
-    <div class="pagination-container">
+    <div class="similar-pagination">
         @Html.PagedListPager(Model.SimilarProducts, page => Url.Action("Index2", new { page }))
     </div>
 }

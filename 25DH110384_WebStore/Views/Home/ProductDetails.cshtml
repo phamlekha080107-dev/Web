@@ -1,92 +1,748 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.ProductDetailVM
 
 @{
-    ViewBag.Title = "ProductDetails";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
+    var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
+    int cartCount = (cart != null && cart.Items != null) ? cart.Items.Count() : 0;
+    int initQty = Model.quantity > 0 ? Model.quantity : 1;
 }
 
+<!DOCTYPE html>
+<html lang="vi">
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Model.product.ProductName - PHONE & ACCES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        .pro {
-            padding: 50px 10px 50px 10px;
-            background-color: ghostwhite;
+        :root {
+            --primary-color: #0b4d3c;
+            --secondary-color: #1a8f6d;
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --text-gray: #666;
+            --border-radius: 14px;
         }
 
-        .pro-section {
-            background-color: white;
-            border: 1px groove #ffffff;
-            border-radius: 10px;
-            /* padding: 5px; */
-            margin: 10px;
+        html {
+            scroll-behavior: smooth;
         }
 
-            .pro-section img {
-                max-height: 250px;
-                max-width: 200px;
-                padding: 5px;
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f8;
+            color: var(--text-dark);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* HEADER */
+        .header-top {
+            background-color: #fff;
+            padding: 15px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-weight: 500;
+        }
+
+            .nav-links a {
+                position: relative;
+                padding-bottom: 6px;
+                transition: color 0.25s ease;
             }
 
-        .pro-price {
-            font-weight: bolder;
-            font-size: larger;
-            color: red;
+                .nav-links a::after {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 0;
+                    height: 2.5px;
+                    background-color: var(--secondary-color);
+                    border-radius: 2px;
+                    transition: width 0.25s ease;
+                }
+
+                .nav-links a:hover {
+                    color: var(--secondary-color);
+                }
+
+                    .nav-links a:hover::after {
+                        width: 100%;
+                    }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .pro-sale {
-            font-weight: lighter;
+        .search-bar {
+            background: var(--bg-light);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+
+            .search-bar input {
+                border: none;
+                background: transparent;
+                outline: none;
+                padding-left: 10px;
+                width: 200px;
+            }
+
+        .icon-btn {
+            font-size: 20px;
+            color: var(--text-dark);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--secondary-color);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* USER DROPDOWN */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #e6f4f0;
+            color: var(--primary-color);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+            .user-trigger:hover {
+                background-color: var(--secondary-color);
+                color: #fff;
+            }
+
+        .user-dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border: 1px solid #eee;
+            border-radius: 10px;
+            min-width: 200px;
+            z-index: 1000;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.35s;
+        }
+
+            .user-dropdown-menu::before {
+                content: "";
+                position: absolute;
+                top: -15px;
+                left: 0;
+                width: 100%;
+                height: 18px;
+                background: transparent;
+            }
+
+        .user-dropdown:hover .user-dropdown-menu,
+        .user-dropdown.open .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+        }
+
+        .user-dropdown-menu a {
+            padding: 12px 20px;
+            display: block;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+            .user-dropdown-menu a:last-child {
+                border-bottom: none;
+            }
+
+            .user-dropdown-menu a:hover {
+                background: #f9f9f9;
+                color: var(--secondary-color);
+            }
+
+        /* BREADCRUMB */
+        .breadcrumb-bar {
+            max-width: 1280px;
+            margin: 22px auto 0 auto;
+            padding: 0 30px;
+            font-size: 14px;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .breadcrumb-bar a:hover {
+                color: var(--secondary-color);
+            }
+
+            .breadcrumb-bar span.current {
+                color: var(--primary-color);
+                font-weight: 600;
+            }
+
+        /* BỐ CỤC CHI TIẾT SẢN PHẨM */
+        .detail-wrapper {
+            max-width: 1280px;
+            margin: 20px auto 60px auto;
+            padding: 0 30px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .card-box {
+            background: #fff;
+            border-radius: var(--border-radius);
+            border: 1px solid #eaeaea;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+            margin-bottom: 25px;
+        }
+
+        /* KHỐI ẢNH & THÔNG TIN CHÍNH */
+        .product-main-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 35px;
+            align-items: start;
+        }
+
+        .product-image-box {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+            border: 1px solid #eee;
+        }
+
+            .product-image-box img {
+                max-width: 100%;
+                max-height: 290px;
+                object-fit: contain;
+                transition: transform 0.3s ease;
+            }
+
+                .product-image-box img:hover {
+                    transform: scale(1.04);
+                }
+
+        .cate-pill {
+            display: inline-block;
+            background: #e6f4f0;
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        .detail-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 12px 0;
+            line-height: 1.3;
+        }
+
+        .detail-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 18px;
+        }
+
+            .detail-meta .stars {
+                color: #ffc107;
+            }
+
+        .detail-price-box {
+            background: #f8fbfa;
+            border: 1px solid #d9ede7;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 22px;
+        }
+
+        .detail-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d93025;
+            margin: 0;
+        }
+
+        /* BỘ CHỌN SỐ LƯỢNG & TẠM TÍNH */
+        .purchase-box {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .qty-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            min-width: 85px;
+        }
+
+        .qty-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+            .qty-control button {
+                width: 36px;
+                height: 36px;
+                border: none;
+                background: #f8f9fa;
+                color: var(--text-dark);
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+                .qty-control button:hover {
+                    background: #e6f4f0;
+                    color: var(--primary-color);
+                }
+
+            .qty-control input {
+                width: 54px;
+                height: 36px;
+                border: none;
+                border-left: 1px solid #eee;
+                border-right: 1px solid #eee;
+                text-align: center;
+                font-family: inherit;
+                font-size: 15px;
+                font-weight: 600;
+                outline: none;
+            }
+
+        .subtotal-row {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .subtotal-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 14px;
+        }
+
+        .btn-cart-main {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.25s;
+            box-shadow: 0 4px 12px rgba(26, 143, 109, 0.25);
+        }
+
+            .btn-cart-main:hover {
+                background-color: var(--primary-color);
+                transform: translateY(-1px);
+            }
+
+        .policy-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px dashed #e5e5e5;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+            .policy-list div {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .policy-list i {
+                color: var(--secondary-color);
+            }
+
+        /* MÔ TẢ SẢN PHẨM */
+        .section-heading {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0 0 16px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e6f4f0;
+        }
+
+        .product-desc-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #444;
+            white-space: pre-line;
+            margin: 0;
+        }
+
+        /* ĐỒNG BỘ CSS CHO RELATED PRODUCT NẾU DÙNG CLASS CŨ */
+        .related-wrapper .list-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .related-wrapper .lproduct-item {
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            transition: 0.25s;
+            background: #fff;
+        }
+
+            .related-wrapper .lproduct-item:hover {
+                box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+                transform: translateY(-3px);
+            }
+
+            .related-wrapper .lproduct-item img {
+                width: 100%;
+                height: 130px;
+                object-fit: contain;
+                margin-bottom: 10px;
+            }
+
+            .related-wrapper .lproduct-item h5 {
+                font-size: 14px;
+                margin: 0 0 6px 0;
+                color: var(--text-dark);
+            }
+
+            .related-wrapper .lproduct-item .prodSale {
+                font-weight: 700;
+                color: #d93025;
+                margin: 0;
+                font-size: 14px;
+            }
+
+        /* FOOTER */
+        .phone-footer {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 40px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .phone-footer h3 {
+                margin: 0 0 8px 0;
+                font-size: 22px;
+            }
+
+            .phone-footer p {
+                margin: 0;
+                color: #cce5de;
+                font-size: 14px;
+            }
+
+        @@media (max-width: 992px) {
+            .detail-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .product-main-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+<body>
 
-<div class="container-fluid pro">
-    <div class="div-horizontal">
-        @* Khối bên trái *@
-        <div class="col-md-3 pro-section">
-            @* Ảnh sản phẩm *@
-        <img src="@Model.product.ProductImage" />
-    </div>
-    @* Khối ở giữa *@
-    <div class="col-md-5 pro-section">
-        @* Phần thông tin sản phẩm *@
-        <div>
-            <h4><strong>@Html.DisplayFor(model => model.product.ProductName)</strong></h4>
-            <p class="pro-sale">Đã bán: @Model.product.OrderDetails.Count</p>
-            <p class="pro-price">@Model.product.ProductPrice.ToString("C")</p>
-            <p>Tủ sách: @Model.product.Category.CategoryName</p>
-            <hr />
-            <h5><strong>Mô tả</strong></h5>
-            <p> @Model.product.ProductDescription </p>
+    <!-- HEADER -->
+    <header class="header-top">
+        <a href="@Url.Action("Index", "Home")" class="logo">
+            <i class="fas fa-shopping-bag"></i> PHONE & ACCES
+        </a>
+
+        <nav class="nav-links">
+            <a href="@Url.Action("Index", "Home")">Trang chủ</a>
+            <a href="@Url.Action("PageDienThoai", "Home")">Điện thoại</a>
+            <a href="@Url.Action("PagePhuKien", "Home")">Phụ kiện</a>
+            <a href="@Url.Action("PageThietBi", "Home")">Đồng hồ</a>
+            <a href="#footer">Hỗ trợ</a>
+        </nav>
+
+        <div class="header-actions">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+            {
+                <div class="search-bar">
+                    <i class="fas fa-search" style="color:#aaa;"></i>
+                    <input type="text" name="searchTerm" placeholder="Tìm sản phẩm..." />
+                    <button type="submit" style="display:none;"></button>
+                </div>
+            }
+
+            @if (Session["Username"] != null)
+            {
+                <div class="user-dropdown">
+                    <div class="user-trigger" onclick="this.parentElement.classList.toggle('open')">
+                        <i class="fas fa-user-circle" style="font-size: 18px;"></i>
+                        <span>@Session["Username"]</span>
+                        <i class="fas fa-chevron-down" style="font-size: 11px;"></i>
+                    </div>
+                    <div class="user-dropdown-menu">
+                        <a href="@Url.Action("ProfileInfo", "Account")">Thông tin tài khoản</a>
+                        <a href="@Url.Action("MyOrder", "Order")">Đơn hàng của tôi</a>
+                        <a href="@Url.Action("Logout", "Account")" style="color: #d9534f;">Đăng xuất</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")" class="icon-btn" title="Đăng nhập"><i class="fas fa-user"></i></a>
+            }
+
+            <a href="@Url.Action("Index", "Cart")" class="icon-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge">@cartCount</span>
+            </a>
         </div>
-        <hr />
+    </header>
 
-        @* khối Related Product *@
-        <div>@Html.Partial("PVRelatedProduct", Model)</div>
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb-bar">
+        <a href="@Url.Action("Index", "Home")"><i class="fas fa-home"></i> Trang chủ</a>
+        <span>/</span>
+        <span>@Model.product.Category.CategoryName</span>
+        <span>/</span>
+        <span class="current">@Model.product.ProductName</span>
     </div>
-    @* Khối bên phải *@
-    <div class="col-md-3 pro-section">
-        <div class="form-group">
-            @* Phần tạm tính *@
-        @using (Html.BeginForm("ProductDetails", "Home", FormMethod.Get))
-        {
-            <h4><strong>Số lượng</strong></h4>
-            <p>
-                @Html.TextBoxFor(model => model.quantity,
-             new { @class = "form-control", @type = "number", @min = 1 })
-        </p>
 
-        <h4><strong>Tạm tính</strong></h4>
-        <p>@Model.estimatedValue.ToString("N0")</p>
+    <!-- NỘI DUNG CHI TIẾT -->
+    <div class="detail-wrapper">
+        <!-- CỘT TRÁI (THÔNG TIN SẢN PHẨM + MÔ TẢ + SẢN PHẨM TƯƠNG TỰ) -->
+        <div>
+            <div class="card-box">
+                <div class="product-main-grid">
+                    <!-- Ảnh sản phẩm -->
+                    <div class="product-image-box">
+                        <img src="@Model.product.ProductImage" alt="@Model.product.ProductName" />
+                    </div>
 
-        <p>
-            @Html.ActionLink("Thêm vào giỏ hàng", "AddToCart", "Cart",
-                new { id = Model.product.ProductID, quantity = Model.quantity },
-                new { @class = "btn btn-info" })
-        </p>
-    }
-        <hr />
+                    <!-- Thông tin & Mua hàng -->
+                    <div>
+                        <span class="cate-pill">
+                            <i class="fas fa-tag"></i> Danh mục: @Model.product.Category.CategoryName
+                        </span>
+
+                        <h1 class="detail-title">@Model.product.ProductName</h1>
+
+                        <div class="detail-meta">
+                            <span class="stars">★★★★★</span>
+                            <span>|</span>
+                            <span>Đã bán: <strong>@Model.product.OrderDetails.Count</strong></span>
+                            <span>|</span>
+                            <span style="color: var(--secondary-color); font-weight: 600;">
+                                <i class="fas fa-check-circle"></i> Còn hàng
+                            </span>
+                        </div>
+
+                        <div class="detail-price-box">
+                            <p class="detail-price" id="unitPrice" data-price="@Model.product.ProductPrice">
+                                @Model.product.ProductPrice.ToString("#,##0").Replace(",", ".") đ
+                            </p>
+                        </div>
+
+                        <div class="purchase-box">
+                            <div class="qty-row">
+                                <span class="qty-label">Số lượng:</span>
+                                <div class="qty-control">
+                                    <button type="button" onclick="changeQty(-1)">−</button>
+                                    <input type="number" id="qtyInput" value="@initQty" min="1" onchange="updateSubtotal()" oninput="updateSubtotal()" />
+                                    <button type="button" onclick="changeQty(1)">+</button>
+                                </div>
+                            </div>
+
+                            <div class="subtotal-row">
+                                <span class="qty-label">Tạm tính:</span>
+                                <span class="subtotal-value" id="subtotalDisplay">
+                                    @((Model.product.ProductPrice * initQty).ToString("#,##0").Replace(",", ".")) đ
+                                </span>
+                            </div>
+
+                            <div class="action-buttons">
+                                <a id="btnAddToCart"
+                                   href="@Url.Action("AddToCart", "Cart", new { id = Model.product.ProductID, quantity = initQty })"
+                                   class="btn-cart-main">
+                                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                                </a>
+                            </div>
+
+                            <div class="policy-list">
+                                <div><i class="fas fa-shield-alt"></i> Bảo hành chính hãng 12 tháng</div>
+                                <div><i class="fas fa-truck"></i> Giao hàng nhanh 24/48h</div>
+                                <div><i class="fas fa-sync-alt"></i> Đổi trả miễn phí trong 7 ngày</div>
+                                <div><i class="fas fa-headset"></i> Hỗ trợ kỹ thuật trọn đời</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÔ TẢ SẢN PHẨM -->
+            <div class="card-box">
+                <h3 class="section-heading">Mô tả sản phẩm</h3>
+                <p class="product-desc-text">
+                    @(string.IsNullOrWhiteSpace(Model.product.ProductDescription)
+                        ? "Đang cập nhật thông tin mô tả chi tiết cho sản phẩm này."
+                        : Model.product.ProductDescription)
+                </p>
+            </div>
+
+            <!-- SẢN PHẨM LIÊN QUAN -->
+            <div class="card-box related-wrapper">
+                @Html.Partial("PVRelatedProduct", Model)
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI (SẢN PHẨM BÁN CHẠY) -->
+        <aside>
+            @Html.Partial("PVTopProduct", Model)
+        </aside>
     </div>
-    @* Khối TopProduct *@
-    <div>@Html.Partial("PVTopProduct", Model)</div>
-</div>
-</div>
-</div>
+
+    <!-- FOOTER -->
+    <footer class="phone-footer" id="footer">
+        <div>
+            <h3>PHONE & ACCES</h3>
+            <p>Điện thoại và phụ kiện công nghệ chính hãng dành cho bạn.</p>
+        </div>
+        <p>© 2026 PHONE & ACCES. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const unitPrice = parseFloat(document.getElementById('unitPrice').getAttribute('data-price')) || 0;
+        const baseCartUrl = '@Url.Action("AddToCart", "Cart", new { id = Model.product.ProductID })';
+
+        function formatVND(number) {
+            return Math.round(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+        }
+
+        function changeQty(delta) {
+            const input = document.getElementById('qtyInput');
+            let current = parseInt(input.value) || 1;
+            let next = current + delta;
+            if (next < 1) next = 1;
+            input.value = next;
+            updateSubtotal();
+        }
+
+        function updateSubtotal() {
+            const input = document.getElementById('qtyInput');
+            let qty = parseInt(input.value);
+            if (isNaN(qty) || qty < 1) {
+                qty = 1;
+                input.value = 1;
+            }
+
+            document.getElementById('subtotalDisplay').innerText = formatVND(unitPrice * qty);
+
+            const separator = baseCartUrl.includes('?') ? '&' : '?';
+            document.getElementById('btnAddToCart').href = `${baseCartUrl}${separator}quantity=${qty}`;
+        }
+
+        document.addEventListener('click', function (e) {
+            const dropdown = document.querySelector('.user-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

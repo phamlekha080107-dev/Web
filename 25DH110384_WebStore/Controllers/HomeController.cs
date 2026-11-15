@@ -30,7 +30,7 @@ namespace _25DH110384_WebStore.Controllers
             }
 
             int pageNumber = page ?? 1;
-            int pageSize = 6;
+            int pageSize = 8;
 
             // Lấy top 10 sản phẩm bán chạy nhất
             model.FeaturedProducts = products.OrderByDescending(p => p.OrderDetails.Count()).Take(10).ToList();
@@ -200,7 +200,7 @@ namespace _25DH110384_WebStore.Controllers
 
             var products = db.Products
                 .Include("Category")
-                .Where(p => p.Category.CategoryName.Trim() == "Phụ kiện")
+                .Where(p => p.Category.CategoryName.Trim() == "Đồng hồ")
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchTerm))

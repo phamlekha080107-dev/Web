@@ -7,7 +7,7 @@
     int cartCount = (cart != null && cart.Items != null) ? cart.Items.Count() : 0;
     string currentAction = ViewContext.RouteData.Values["action"] != null
         ? ViewContext.RouteData.Values["action"].ToString()
-        : "";
+        : "PageThietBi";
 }
 
 <!DOCTYPE html>
@@ -15,7 +15,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phụ kiện - PHONE & ACCES</title>
+    <title>Đồng hồ - PHONE & ACCES</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -426,19 +426,36 @@
             list-style: none;
             gap: 8px;
             padding: 0;
+            margin: 0;
         }
 
             .pagination li a, .pagination li span {
-                padding: 8px 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 38px;
+                height: 38px;
+                padding: 0 12px;
                 border: 1px solid #ddd;
                 border-radius: 8px;
                 color: var(--text-dark);
+                font-size: 14px;
+                font-weight: 500;
+                transition: 0.25s;
             }
 
-            .pagination li.active a {
+                .pagination li a:hover {
+                    background-color: #e6f4f0;
+                    border-color: var(--secondary-color);
+                    color: var(--primary-color);
+                }
+
+            .pagination li.active a,
+            .pagination li.active span {
                 background: var(--secondary-color);
                 color: #fff;
                 border-color: var(--secondary-color);
+                font-weight: 600;
             }
 
         /* USER DROPDOWN */
@@ -561,11 +578,11 @@
         </nav>
 
         <div class="header-actions">
-            @using (Html.BeginForm("PagePhuKien", "Home", FormMethod.Get))
+            @using (Html.BeginForm("PageThietBi", "Home", FormMethod.Get))
             {
                 <div class="search-bar">
                     <i class="fas fa-search" style="color:#aaa;"></i>
-                    @Html.TextBoxFor(m => m.SearchTerm, new { @placeholder = "Tìm phụ kiện..." })
+                    @Html.TextBoxFor(m => m.SearchTerm, new { @placeholder = "Tìm đồng hồ..." })
                     <button type="submit" style="display:none;"></button>
                 </div>
             }
@@ -597,13 +614,13 @@
         </div>
     </header>
 
-    <!-- BANNER LƯỚT PHỤ KIỆN -->
+    <!-- BANNER LƯỚT ĐỒNG HỒ -->
     <section class="hero-section">
         <div class="hero-content">
             <span class="hero-badge">✦ Sản phẩm mới</span>
-            <h1>Phụ kiện công nghệ<br>nâng tầm trải nghiệm</h1>
-            <p>Sạc dự phòng, tai nghe, ốp lưng và phụ kiện chính hãng với chất lượng vượt trội và giá cả cạnh tranh.</p>
-            <a href="#accessorySection" class="btn-primary">Khám phá bộ sưu tập ></a>
+            <h1>Đồng hồ thông minh<br>nâng tầm phong cách</h1>
+            <p>Theo dõi sức khỏe toàn diện, thiết kế tinh tế và kết nối thông minh đồng hành cùng bạn mỗi ngày.</p>
+            <a href="#watchSection" class="btn-primary">Khám phá bộ sưu tập ></a>
 
             <div class="hero-features">
                 <div class="feature-item">
@@ -621,13 +638,13 @@
         <div class="hero-slider-container">
             <div class="hero-slider" id="heroSlider">
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80" alt="Banner Phụ kiện 1">
+                    <img src="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1200&q=80" alt="Banner Đồng hồ 1">
                 </div>
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=1200&q=80" alt="Banner Phụ kiện 2">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80" alt="Banner Đồng hồ 2">
                 </div>
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1200&q=80" alt="Banner Phụ kiện 3">
+                    <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1200&q=80" alt="Banner Đồng hồ 3">
                 </div>
             </div>
 
@@ -639,20 +656,20 @@
         </div>
     </section>
 
-    <!-- DANH SÁCH PHỤ KIỆN TỪ DATABASE -->
-    <main class="section-container" id="accessorySection">
+    <!-- DANH SÁCH ĐỒNG HỒ TỪ DATABASE -->
+    <main class="section-container" id="watchSection">
         <div class="toolbar">
             <div class="toolbar-title">
-                <h2>DANH SÁCH PHỤ KIỆN</h2>
+                <h2>DANH SÁCH ĐỒNG HỒ</h2>
             </div>
 
-            @using (Html.BeginForm("PagePhuKien", "Home", FormMethod.Get, new { @class = "toolbar-controls" }))
+            @using (Html.BeginForm("PageThietBi", "Home", FormMethod.Get, new { @class = "toolbar-controls" }))
             {
                 <input type="text"
                        name="searchTerm"
                        value="@Model.SearchTerm"
                        class="filter-input"
-                       placeholder="Tìm tên phụ kiện..." />
+                       placeholder="Tìm tên đồng hồ..." />
 
                 <select name="sortOrder" class="filter-select" onchange="this.form.submit()">
                     <option value="default" @(ViewBag.CurrentSort == "default" ? "selected" : "")>Sắp xếp mặc định</option>
@@ -664,7 +681,7 @@
 
         @if (Model.NewProducts != null && Model.NewProducts.Any())
         {
-            <div class="product-grid" id="accessoryList">
+            <div class="product-grid" id="watchList">
                 @foreach (var product in Model.NewProducts)
                 {
                     <div class="product-card">
@@ -697,7 +714,7 @@
             </div>
 
             <div class="pagination-container">
-                @Html.PagedListPager(Model.NewProducts, page => Url.Action("PagePhuKien", new
+                @Html.PagedListPager(Model.NewProducts, page => Url.Action("PageThietBi", new
                 {
                     page,
                     searchTerm = Model.SearchTerm,
@@ -709,7 +726,7 @@
         {
             <div style="text-align: center; padding: 60px 20px; background: var(--bg-light); border-radius: 15px;">
                 <p style="color: var(--text-gray); font-size: 16px; margin: 0;">
-                    Hiện chưa có sản phẩm nào thuộc danh mục <strong>Phụ kiện</strong>.
+                    Hiện chưa có sản phẩm nào thuộc danh mục <strong>Đồng hồ</strong>.
                 </p>
             </div>
         }
