@@ -1,8 +1,10 @@
-﻿@model IEnumerable<_25DH110384_WebStore.Models.Order>
+﻿@model PagedList.IPagedList<_25DH110384_WebStore.Models.Order>
+@using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Danh sách đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var statusList = ViewBag.PaymentStatuses as System.Collections.Generic.List<string> ?? new System.Collections.Generic.List<string>();
 }
 
 <style>
@@ -21,12 +23,101 @@
         padding: 15px 20px;
         font-weight: bold;
         font-size: 1.3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
+    /* KHUNG TÌM KIẾM */
+    .search-section {
+        background-color: #f8fbf9;
+        padding: 16px 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: flex-end;
+    }
+
+    .search-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 200px;
+    }
+
+        .search-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            margin: 0;
+        }
+
+        .search-group .form-control {
+            height: 38px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+        }
+
+            .search-group .form-control:focus {
+                border-color: #1e824c;
+                box-shadow: 0 0 0 2px rgba(30, 130, 76, 0.15);
+            }
+
+    .search-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-filter {
+        background-color: #1e824c;
+        color: #fff;
+        border: none;
+        height: 38px;
+        padding: 0 18px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-filter:hover {
+            background-color: #16653b;
+            color: #fff;
+        }
+
+    .btn-reset {
+        background-color: #fff;
+        color: #495057;
+        border: 1px solid #ced4da;
+        height: 38px;
+        padding: 0 14px;
+        border-radius: 5px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+    }
+
+        .btn-reset:hover {
+            background-color: #e9ecef;
+            color: #212529;
+            text-decoration: none;
+        }
+
+    /* BẢNG DANH SÁCH ĐƠN HÀNG */
     .custom-table {
         margin-bottom: 0;
         width: 100%;
-        table-layout: fixed; /* Giữ cố định tỉ lệ chia cột */
+        table-layout: fixed;
     }
 
         .custom-table th {
@@ -41,6 +132,7 @@
         .custom-table td {
             vertical-align: middle !important;
             padding: 12px !important;
+            word-wrap: break-word;
         }
 
     .badge-id {
@@ -49,6 +141,17 @@
         font-weight: bold;
         padding: 5px 10px;
         border-radius: 4px;
+        display: inline-block;
+    }
+
+    .badge-status {
+        background-color: #e8f5e9;
+        color: #1e824c;
+        border: 1px solid #c8e6c9;
+        font-weight: 600;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 20px;
         display: inline-block;
     }
 
@@ -62,23 +165,138 @@
         gap: 6px;
         justify-content: center;
     }
+
+    /* THÔNG BÁO KHÔNG CÓ */
+    .empty-message {
+        padding: 45px 20px !important;
+        text-align: center;
+        color: #d9534f;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    /* PHÂN TRANG */
+    .pagination-container {
+        padding: 15px 20px;
+        background-color: #fff;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .pagination-container .pagination {
+        margin: 0;
+        display: flex;
+        list-style: none;
+        gap: 6px;
+        padding: 0;
+    }
+
+        .pagination-container .pagination li a,
+        .pagination-container .pagination li span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            color: #333;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .pagination-container .pagination li a:hover {
+                background-color: #e8f5e9;
+                border-color: #1e824c;
+                color: #1e824c;
+            }
+
+        .pagination-container .pagination li.active a,
+        .pagination-container .pagination li.active span {
+            background-color: #1e824c;
+            border-color: #1e824c;
+            color: #fff;
+        }
 </style>
 
 <div class="order-card">
     <div class="order-header">
-        <i class="fas fa-list-alt" style="margin-right: 8px;"></i> DANH SÁCH ĐƠN HÀNG
+        <span><i class="fas fa-list-alt" style="margin-right: 8px;"></i> DANH SÁCH ĐƠN HÀNG</span>
+        <span style="font-size: 14px; font-weight: normal;">
+            Tổng: @(Model != null ? Model.TotalItemCount : 0) đơn hàng
+        </span>
     </div>
 
+    <!-- PHẦN TÌM KIẾM -->
+    <div class="search-section">
+        @using (Html.BeginForm("Index", "Orders", new { area = "Admin" }, FormMethod.Get, new { @class = "search-form" }))
+        {
+            <div class="search-group">
+                <label for="customerName">Tên khách hàng</label>
+                <input type="text"
+                       id="customerName"
+                       name="customerName"
+                       value="@ViewBag.CustomerName"
+                       class="form-control"
+                       placeholder="Nhập tên khách hàng..." />
+            </div>
+
+            <div class="search-group">
+                <label for="paymentStatus">Trạng thái thanh toán</label>
+                <select id="paymentStatus" name="paymentStatus" class="form-control">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    @foreach (var status in statusList)
+                    {
+                        <option value="@status" @(ViewBag.PaymentStatus == status ? "selected" : "")>
+                            @status
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="search-group">
+                <label for="orderDate">Ngày đặt hàng</label>
+                <input type="date"
+                       id="orderDate"
+                       name="orderDate"
+                       value="@ViewBag.OrderDate"
+                       class="form-control" />
+            </div>
+
+            <div class="search-buttons">
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> Tất cả
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- PHẦN KẾT QUẢ DANH SÁCH ĐƠN HÀNG -->
     <div class="table-responsive">
         <table class="table table-hover custom-table">
             <thead>
                 <tr>
                     <th class="text-center" style="width: 80px;">Mã ĐH</th>
-                    <th class="text-left" style="width: 180px;">Tên khách hàng</th>
-                    <th class="text-center" style="width: 160px;">Ngày đặt</th>
-                    <th class="text-center" style="width: 140px;">Tổng tiền</th>
+                    <th class="text-left" style="width: 170px;">Tên khách hàng</th>
+                    <th class="text-center" style="width: 145px;">Ngày đặt</th>
+                    <th class="text-center" style="width: 135px;">Tổng tiền</th>
+                    <th class="text-center" style="width: 165px;">Trạng thái TT</th>
                     <th class="text-center">Địa chỉ giao hàng</th>
-                    <th class="text-center" style="width: 180px;">Thao tác</th>
+                    <th class="text-center" style="width: 170px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -99,7 +317,11 @@
                             <td class="text-center price-text">
                                 @(((decimal)item.TotalAmount).ToString("N0")) VNĐ
                             </td>
-                            <!-- Căn giữa chữ Địa chỉ giao hàng -->
+                            <td class="text-center">
+                                <span class="badge-status">
+                                    @(string.IsNullOrEmpty(item.PaymentStatus) ? "Chưa cập nhật" : item.PaymentStatus)
+                                </span>
+                            </td>
                             <td class="text-center">
                                 @item.ShippingAddress
                             </td>
@@ -124,12 +346,31 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center text-muted" style="padding: 30px !important;">
-                            Chưa có đơn hàng nào trong hệ thống.
+                        <td colspan="7" class="empty-message">
+                            KHÔNG CÓ
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+
+    <!-- PHÂN TRANG 15 ĐƠN HÀNG / TRANG -->
+    @if (Model != null && Model.PageCount > 0)
+    {
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+            </div>
+
+            @Html.PagedListPager(Model, page => Url.Action("Index", new
+            {
+                area = "Admin",
+                page,
+                customerName = ViewBag.CustomerName,
+                paymentStatus = ViewBag.PaymentStatus,
+                orderDate = ViewBag.OrderDate
+            }))
+        </div>
+    }
 </div>

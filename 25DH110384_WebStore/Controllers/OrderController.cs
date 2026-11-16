@@ -215,7 +215,7 @@ namespace _25DH110384_WebStore.Controllers
                             detail.Product.ProductImage,
                             detail.Product.ProductName,
                             detail.UnitPrice,
-                            detail.Quantity,
+                            1,
                             detail.Product.Category != null ? detail.Product.Category.CategoryName : string.Empty
                         );
                     }
