@@ -5,6 +5,10 @@
     ViewBag.Title = "Danh sách đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var statusList = ViewBag.PaymentStatuses as System.Collections.Generic.List<string> ?? new System.Collections.Generic.List<string>();
+    var allStatuses = ViewBag.AllStatuses as System.Collections.Generic.List<string> ?? new System.Collections.Generic.List<string>
+{
+        "Chờ thanh toán", "Đang xử lý", "Đã xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy"
+    };
 }
 
 <style>
@@ -144,16 +148,58 @@
         display: inline-block;
     }
 
-    .badge-status {
+    /* DROPDOWN CHỌN TRẠNG THÁI TRỰC TIẾP */
+    .status-select {
+        width: 100%;
+        max-width: 165px;
+        height: 32px;
+        padding: 2px 8px;
+        border-radius: 16px;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.2s ease;
         background-color: #e8f5e9;
         color: #1e824c;
         border: 1px solid #c8e6c9;
-        font-weight: 600;
-        font-size: 12px;
-        padding: 4px 10px;
-        border-radius: 20px;
-        display: inline-block;
     }
+
+        .status-select.status-processing {
+            background-color: #fff8e1;
+            color: #b7791f;
+            border-color: #f6e05e;
+        }
+
+        .status-select.status-processed {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-color: #90caf9;
+        }
+
+        .status-select.status-shipping {
+            background-color: #ede7f6;
+            color: #5e35b1;
+            border-color: #b39ddb;
+        }
+
+        .status-select.status-delivered {
+            background-color: #e8f5e9;
+            color: #1e824c;
+            border-color: #a5d6a7;
+        }
+
+        .status-select.status-cancelled {
+            background-color: #ffebee;
+            color: #c62828;
+            border-color: #ef9a9a;
+        }
+
+        .status-select.status-pending {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border-color: #d1d5db;
+        }
 
     .price-text {
         color: #d9534f;
@@ -243,17 +289,17 @@
         @using (Html.BeginForm("Index", "Orders", new { area = "Admin" }, FormMethod.Get, new { @class = "search-form" }))
         {
             <div class="search-group">
-                <label for="customerName">Tên khách hàng</label>
+                <label for="customerName">Tên khách hàng / Mã ĐH</label>
                 <input type="text"
                        id="customerName"
                        name="customerName"
                        value="@ViewBag.CustomerName"
                        class="form-control"
-                       placeholder="Nhập tên khách hàng..." />
+                       placeholder="Nhập tên khách hàng hoặc #mã ĐH..." />
             </div>
 
             <div class="search-group">
-                <label for="paymentStatus">Trạng thái thanh toán</label>
+                <label for="paymentStatus">Trạng thái xử lý</label>
                 <select id="paymentStatus" name="paymentStatus" class="form-control">
                     <option value="">-- Tất cả trạng thái --</option>
                     @foreach (var status in statusList)
@@ -291,12 +337,12 @@
             <thead>
                 <tr>
                     <th class="text-center" style="width: 80px;">Mã ĐH</th>
-                    <th class="text-left" style="width: 170px;">Tên khách hàng</th>
-                    <th class="text-center" style="width: 145px;">Ngày đặt</th>
-                    <th class="text-center" style="width: 135px;">Tổng tiền</th>
-                    <th class="text-center" style="width: 165px;">Trạng thái TT</th>
+                    <th class="text-left" style="width: 165px;">Tên khách hàng</th>
+                    <th class="text-center" style="width: 140px;">Ngày đặt</th>
+                    <th class="text-center" style="width: 130px;">Tổng tiền</th>
+                    <th class="text-center" style="width: 185px;">Trạng thái</th>
                     <th class="text-center">Địa chỉ giao hàng</th>
-                    <th class="text-center" style="width: 170px;">Thao tác</th>
+                    <th class="text-center" style="width: 165px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -304,6 +350,14 @@
                 {
                     foreach (var item in Model)
                     {
+                        string currentStatus = string.IsNullOrWhiteSpace(item.PaymentStatus) ? "Đang xử lý" : item.PaymentStatus.Trim();
+                        string statusCss = "status-processing";
+                        if (currentStatus == "Đã xử lý") { statusCss = "status-processed"; }
+                        else if (currentStatus == "Đang vận chuyển") { statusCss = "status-shipping"; }
+                        else if (currentStatus == "Đã giao" || currentStatus == "Đã giao hàng") { statusCss = "status-delivered"; }
+                        else if (currentStatus == "Đã hủy") { statusCss = "status-cancelled"; }
+                        else if (currentStatus == "Chờ thanh toán") { statusCss = "status-pending"; }
+
                         <tr>
                             <td class="text-center">
                                 <span class="badge-id">#@item.OrderID</span>
@@ -318,16 +372,33 @@
                                 @(((decimal)item.TotalAmount).ToString("N0")) VNĐ
                             </td>
                             <td class="text-center">
-                                <span class="badge-status">
-                                    @(string.IsNullOrEmpty(item.PaymentStatus) ? "Chưa cập nhật" : item.PaymentStatus)
-                                </span>
+                                @using (Html.BeginForm("UpdateStatus", "Orders", new { area = "Admin" }, FormMethod.Post, new { style = "margin:0;" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="OrderID" value="@item.OrderID" />
+                                    <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+
+                                    <select name="PaymentStatus"
+                                            class="status-select @statusCss"
+                                            onchange="this.form.submit()"
+                                            title="Chọn để đổi trạng thái đơn hàng">
+                                        @if (!allStatuses.Contains(currentStatus))
+                                        {
+                                            <option value="@currentStatus" selected>@currentStatus</option>
+                                        }
+                                        @foreach (var st in allStatuses)
+                                        {
+                                            <option value="@st" @(currentStatus == st ? "selected" : "")>@st</option>
+                                        }
+                                    </select>
+                                }
                             </td>
                             <td class="text-center">
                                 @item.ShippingAddress
                             </td>
                             <td class="text-center">
                                 <div class="action-btns">
-                                    <a href="@Url.Action("Details", "Orders", new { area = "Admin", id = item.OrderID })" class="btn btn-info btn-sm" title="Xem chi tiết">
+                                    <a href="@Url.Action("DetailedOrder", "Orders", new { area = "Admin", id = item.OrderID })" class="btn btn-info btn-sm" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i> Chi tiết
                                     </a>
 
@@ -347,7 +418,7 @@
                 {
                     <tr>
                         <td colspan="7" class="empty-message">
-                            Không tìm thấy tên khách hàng
+                            Không tìm thấy đơn hàng nào phù hợp
                         </td>
                     </tr>
                 }

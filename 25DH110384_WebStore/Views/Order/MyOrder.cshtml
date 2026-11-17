@@ -4,6 +4,31 @@
     Layout = null;
     var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
     int cartCount = (cart != null && cart.Items != null) ? cart.Items.Count() : 0;
+
+    string selectedStatus = ViewBag.SelectedStatus as string ?? "Tất cả đơn";
+    string searchTerm = ViewBag.SearchTerm as string ?? "";
+    bool showAll = ViewBag.ShowAll != null && (bool)ViewBag.ShowAll;
+
+    var allOrders = Model != null ? Model.ToList() : new List<_25DH110384_WebStore.Models.Order>();
+
+    var statusTabs = new List<string>
+    {
+        "Tất cả đơn",
+        "Chờ thanh toán",
+        "Đang xử lý",
+        "Đang vận chuyển",
+        "Đã giao",
+        "Đã hủy"
+    };
+
+    var groupStatuses = new List<string>
+    {
+        "Chờ thanh toán",
+        "Đang xử lý",
+        "Đang vận chuyển",
+        "Đã giao",
+        "Đã hủy"
+    };
 }
 
 <!DOCTYPE html>
@@ -174,7 +199,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
             border: 1px solid #eee;
             border-radius: 10px;
-            min-width: 200px;
+            min-width: 205px;
             z-index: 1000;
             transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.35s;
         }
@@ -250,7 +275,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 22px;
+            margin-bottom: 18px;
         }
 
         .page-heading {
@@ -272,13 +297,161 @@
             border-radius: 20px;
         }
 
+        /* THANH TÌM KIẾM ĐƠN HÀNG */
+        .order-search-box {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eaeaea;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .order-search-input-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: var(--bg-light);
+            border: 1px solid #e0e0e0;
+            border-radius: 9px;
+            padding: 0 14px;
+            height: 42px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+            .order-search-input-wrap:focus-within {
+                border-color: var(--secondary-color);
+                background: #fff;
+            }
+
+            .order-search-input-wrap input {
+                border: none;
+                background: transparent;
+                outline: none;
+                width: 100%;
+                padding-left: 10px;
+                font-family: inherit;
+                font-size: 14px;
+                color: var(--text-dark);
+            }
+
+        .btn-order-search {
+            height: 42px;
+            padding: 0 22px;
+            background: var(--secondary-color);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.2s;
+        }
+
+            .btn-order-search:hover {
+                background: var(--primary-color);
+            }
+
+        .btn-order-reset {
+            height: 42px;
+            padding: 0 16px;
+            background: #fff;
+            color: var(--text-gray);
+            border: 1px solid #dcdcdc;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+            .btn-order-reset:hover {
+                background: #f4f6f8;
+                color: var(--text-dark);
+            }
+
+        /* TABS TRẠNG THÁI ĐƠN HÀNG */
+        .status-tabs-bar {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eaeaea;
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .status-tab-item {
+            flex: 1;
+            min-width: 130px;
+            text-align: center;
+            padding: 15px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+            .status-tab-item:hover {
+                color: var(--secondary-color);
+                background: #f9fcfb;
+            }
+
+            .status-tab-item.active {
+                color: var(--primary-color);
+                border-bottom-color: var(--secondary-color);
+                background: #f2faf7;
+            }
+
+        /* GOM NHÓM THEO TRẠNG THÁI */
+        .status-group-section {
+            margin-bottom: 28px;
+        }
+
+        .status-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px 16px;
+            background: #e6f4f0;
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 8px;
+        }
+
+        .status-group-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-group-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
         /* THẺ ĐƠN HÀNG */
         .order-card {
             background: #fff;
             border-radius: var(--border-radius);
             border: 1px solid #eaeaea;
             padding: 22px 26px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
             transition: box-shadow 0.25s ease;
         }
@@ -331,6 +504,12 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
+
+            .order-status-pill.cancelled {
+                background: #fdf2f2;
+                color: #d93025;
+                border-color: #f5c6cb;
+            }
 
         /* DANH SÁCH SẢN PHẨM TRONG ĐƠN */
         .product-item {
@@ -396,12 +575,53 @@
             font-weight: 500;
         }
 
+        .product-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
         .product-price {
             font-weight: 700;
             font-size: 15px;
             color: var(--text-dark);
             white-space: nowrap;
         }
+
+        .item-mini-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-item-detail {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: #f2faf7;
+            border: 1px solid #cce7df;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+            .btn-item-detail:hover {
+                background: #e6f4f0;
+            }
+
+        .btn-item-rebuy {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--secondary-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+            .btn-item-rebuy:hover {
+                background: var(--primary-color);
+            }
 
         /* FOOTER ĐƠN HÀNG */
         .order-footer {
@@ -477,6 +697,31 @@
                 transform: translateY(-1px);
             }
 
+        /* XEM THÊM */
+        .see-more-row {
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .btn-see-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 22px;
+            border-radius: 20px;
+            background: #fff;
+            color: var(--primary-color);
+            border: 1.5px solid #cce7df;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+            .btn-see-more:hover {
+                background: #e6f4f0;
+                border-color: var(--secondary-color);
+            }
+
         /* EMPTY STATE */
         .empty-orders-box {
             background: #fff;
@@ -501,15 +746,11 @@
         }
 
         .empty-orders-box h4 {
-            margin: 0 0 8px 0;
-            font-size: 20px;
-            color: var(--text-dark);
-        }
-
-        .empty-orders-box p {
-            margin: 0 0 24px 0;
-            color: var(--text-gray);
-            font-size: 14px;
+            margin: 0 0 20px 0;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 0.3px;
         }
 
         /* FOOTER */
@@ -541,6 +782,22 @@
 
             .nav-links {
                 display: none;
+            }
+
+            .order-search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .product-item {
+                flex-wrap: wrap;
+            }
+
+            .product-right {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
 
             .order-footer {
@@ -595,7 +852,7 @@
                     </div>
                     <div class="user-dropdown-menu">
                         <a href="@Url.Action("ProfileInfo", "Account")">Thông tin tài khoản</a>
-                        <a href="@Url.Action("MyOrder", "Order")">Đơn hàng của tôi</a>
+                        <a href="@Url.Action("MyOrder", "Order")">Lịch sử mua hàng</a>
                         <a href="@Url.Action("Logout", "Account")" style="color: #d9534f;">Đăng xuất</a>
                     </div>
                 </div>
@@ -625,29 +882,177 @@
             <h1 class="page-heading">
                 <i class="fas fa-box-open"></i> Đơn hàng của tôi
             </h1>
-            @if (Model != null && Model.Any())
+            @if (allOrders.Any())
             {
-                <span class="order-count-badge">@Model.Count() đơn hàng</span>
+                <span class="order-count-badge">@allOrders.Count đơn hàng</span>
             }
         </div>
 
-        @if (Model == null || !Model.Any())
+        <!-- PHẦN TÌM KIẾM ĐƠN HÀNG -->
+        @using (Html.BeginForm("MyOrder", "Order", FormMethod.Get, new { @class = "order-search-box" }))
+        {
+            <input type="hidden" name="status" value="@selectedStatus" />
+            <div class="order-search-input-wrap">
+                <i class="fas fa-search" style="color: #999;"></i>
+                <input type="text"
+                       name="searchTerm"
+                       value="@searchTerm"
+                       placeholder="Tìm theo Mã đơn hàng hoặc Tên sản phẩm..." />
+            </div>
+            <button type="submit" class="btn-order-search">
+                <i class="fas fa-search"></i> Tìm kiếm
+            </button>
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                <a href="@Url.Action("MyOrder", "Order", new { status = selectedStatus })" class="btn-order-reset">
+                    <i class="fas fa-times"></i> Xóa lọc
+                </a>
+            }
+        }
+
+        <!-- CÁC TAB TRẠNG THÁI ĐƠN HÀNG -->
+        <div class="status-tabs-bar">
+            @foreach (var tab in statusTabs)
+            {
+                bool isActive = selectedStatus == tab;
+                <a href="@Url.Action("MyOrder", "Order", new { status = tab, searchTerm = searchTerm, showAll = false })"
+                   class="status-tab-item @(isActive ? "active" : "")">
+                    @tab
+                </a>
+            }
+        </div>
+
+        <!-- DANH SÁCH ĐƠN HÀNG -->
+        @if (!allOrders.Any())
         {
             <div class="empty-orders-box">
                 <div class="empty-icon">
                     <i class="fas fa-file-invoice"></i>
                 </div>
-                <h4>Bạn chưa có đơn hàng nào</h4>
-                <p>Hãy khám phá và đặt mua những sản phẩm công nghệ yêu thích ngay hôm nay.</p>
-                <a href="@Url.Action("Index", "Home")" class="btn-rebuy" style="padding: 12px 28px;">
-                    <i class="fas fa-shopping-bag"></i> Mua sắm ngay
+                <h4>BẠN CHƯA CÓ ĐƠN HÀNG NÀO. HÃY ĐẶT ĐƠN NGAY.</h4>
+                <a href="@Url.Action("Index", "Home")" class="btn-rebuy" style="padding: 12px 28px; font-size: 15px;">
+                    <i class="fas fa-home"></i> Về trang chủ mua sắm ngay
                 </a>
             </div>
         }
+        else if (selectedStatus == "Tất cả đơn")
+        {
+            <!-- TAB TẤT CẢ ĐƠN: GOM NHÓM THEO TRẠNG THÁI ĐƠN (2 ĐƠN GẦN NHẤT / NHÓM) -->
+            foreach (var groupName in groupStatuses)
+            {
+                var groupOrders = allOrders
+                    .Where(o => o.PaymentStatus == groupName)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToList();
+
+                if (groupOrders.Any())
+                {
+                    var visibleOrders = groupOrders.Take(2).ToList();
+                    <section class="status-group-section">
+                        <div class="status-group-header">
+                            <span class="status-group-title">
+                                <i class="fas fa-tag"></i> @groupName
+                            </span>
+                            <span class="status-group-count">
+                                Hiển thị @visibleOrders.Count / @groupOrders.Count đơn hàng
+                            </span>
+                        </div>
+
+                        @foreach (var order in visibleOrders)
+                        {
+                            var firstDetail = order.OrderDetails != null ? order.OrderDetails.FirstOrDefault() : null;
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-meta">
+                                        <span class="order-id">Mã đơn hàng: #@order.OrderID</span>
+                                        <span style="color:#ddd;">|</span>
+                                        <span class="order-date">
+                                            <i class="far fa-clock"></i> Ngày đặt: @order.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                                        </span>
+                                    </div>
+                                    <span class="order-status-pill @(order.PaymentStatus == "Đã hủy" ? "cancelled" : "")">
+                                        @order.PaymentStatus
+                                    </span>
+                                </div>
+
+                                <div class="order-body">
+                                    @foreach (var detail in order.OrderDetails)
+                                    {
+                                        <div class="product-item">
+                                            <div class="product-thumb">
+                                                <img src="@(detail.Product != null ? detail.Product.ProductImage : "/Images/default.png")" alt="Product" />
+                                            </div>
+                                            <div class="product-info">
+                                                <h5>
+                                                    @if (detail.Product != null)
+                                                    {
+                                                        <a href="@Url.Action("ProductDetails", "Home", new { id = detail.Product.ProductID })">
+                                                            @detail.Product.ProductName
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Sản phẩm</span>
+                                                    }
+                                                </h5>
+                                                <span class="product-qty">Số lượng: x@(detail.Quantity)</span>
+                                            </div>
+                                            <div class="product-right">
+                                                <div class="product-price">
+                                                    @detail.UnitPrice.ToString("#,##0").Replace(",", ".") đ
+                                                </div>
+                                                <div class="item-mini-actions">
+                                                    <a href="@Url.Action("ProductDetails", "Home", new { id = detail.ProductID })" class="btn-item-detail">
+                                                        Xem chi tiết
+                                                    </a>
+                                                    <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID, productId = detail.ProductID })" class="btn-item-rebuy">
+                                                        Mua lại
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="order-footer">
+                                    <div class="total-group">
+                                        <span class="total-label">Tổng tiền:</span>
+                                        <span class="total-price">@order.TotalAmount.ToString("#,##0").Replace(",", ".") đ</span>
+                                    </div>
+
+                                    <div class="order-actions">
+                                        @if (firstDetail != null)
+                                        {
+                                            <a href="@Url.Action("ProductDetails", "Home", new { id = firstDetail.ProductID })" class="btn-detail">
+                                                <i class="fas fa-eye"></i> Xem chi tiết
+                                            </a>
+                                        }
+                                        <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID })" class="btn-rebuy">
+                                            <i class="fas fa-redo-alt"></i> Mua lại
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (groupOrders.Count > 2)
+                        {
+                            <div class="see-more-row">
+                                <a href="@Url.Action("MyOrder", "Order", new { status = groupName, searchTerm = searchTerm, showAll = true })" class="btn-see-more">
+                                    Xem thêm (@(groupOrders.Count > 50 ? 50 : groupOrders.Count) đơn gần nhất) <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        }
+                    </section>
+                }
+            }
+        }
         else
         {
-            foreach (var order in Model)
+            <!-- CÁC TAB TRẠNG THÁI CỤ THỂ (2 ĐƠN GẦN NHẤT HOẶC TỐI ĐA 50 ĐƠN KHI BẤM XEM THÊM) -->
+            foreach (var order in allOrders)
             {
+                var firstDetail = order.OrderDetails != null ? order.OrderDetails.FirstOrDefault() : null;
                 <div class="order-card">
                     <div class="order-header">
                         <div class="order-meta">
@@ -657,7 +1062,9 @@
                                 <i class="far fa-clock"></i> Ngày đặt: @order.OrderDate.ToString("dd/MM/yyyy HH:mm")
                             </span>
                         </div>
-                        <span class="order-status-pill">@order.PaymentStatus</span>
+                        <span class="order-status-pill @(order.PaymentStatus == "Đã hủy" ? "cancelled" : "")">
+                            @order.PaymentStatus
+                        </span>
                     </div>
 
                     <div class="order-body">
@@ -682,8 +1089,18 @@
                                     </h5>
                                     <span class="product-qty">Số lượng: x@(detail.Quantity)</span>
                                 </div>
-                                <div class="product-price">
-                                    @detail.UnitPrice.ToString("#,##0").Replace(",", ".") đ
+                                <div class="product-right">
+                                    <div class="product-price">
+                                        @detail.UnitPrice.ToString("#,##0").Replace(",", ".") đ
+                                    </div>
+                                    <div class="item-mini-actions">
+                                        <a href="@Url.Action("ProductDetails", "Home", new { id = detail.ProductID })" class="btn-item-detail">
+                                            Xem chi tiết
+                                        </a>
+                                        <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID, productId = detail.ProductID })" class="btn-item-rebuy">
+                                            Mua lại
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -696,14 +1113,26 @@
                         </div>
 
                         <div class="order-actions">
-                            <a href="@Url.Action("OrderSuccess", "Order", new { id = order.OrderID })" class="btn-detail">
-                                <i class="fas fa-eye"></i> Xem chi tiết
-                            </a>
+                            @if (firstDetail != null)
+                            {
+                                @*<a href="@Url.Action("ProductDetails", "Home", new { id = firstDetail.ProductID })" class="btn-detail">
+                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                </a>*@
+                            }
                             <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID })" class="btn-rebuy">
                                 <i class="fas fa-redo-alt"></i> Mua lại
                             </a>
                         </div>
                     </div>
+                </div>
+            }
+
+            if (!showAll && allOrders.Count >= 2)
+            {
+                <div class="see-more-row">
+                    <a href="@Url.Action("MyOrder", "Order", new { status = selectedStatus, searchTerm = searchTerm, showAll = true })" class="btn-see-more">
+                        Xem thêm (tối đa 50 đơn hàng gần nhất) <i class="fas fa-chevron-down"></i>
+                    </a>
                 </div>
             }
         }

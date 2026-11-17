@@ -2,6 +2,7 @@
 using _25DH110384_WebStore.Models.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -10,6 +11,27 @@ namespace _25DH110384_WebStore.Controllers
     public class OrderController : Controller
     {
         private QuanLiKhachHangEntities1 db = new QuanLiKhachHangEntities1();
+
+        // Chuẩn hóa trạng thái đơn hàng về 5 nhóm hiển thị trên các Tab
+        private string NormalizeOrderStatus(string rawStatus)
+        {
+            if (string.IsNullOrWhiteSpace(rawStatus))
+                return "Chờ thanh toán";
+
+            string s = rawStatus.Trim().ToLower();
+            if (s.Contains("chờ") || s.Contains("chưa thanh toán"))
+                return "Chờ thanh toán";
+            if (s.Contains("xử lý") || s.Contains("tiền mặt") || s.Contains("đã thanh toán") || s.Contains("paypal"))
+                return "Đang xử lý";
+            if (s.Contains("vận chuyển") || s.Contains("đang giao"))
+                return "Đang vận chuyển";
+            if (s.Contains("đã giao"))
+                return "Đã giao";
+            if (s.Contains("hủy"))
+                return "Đã hủy";
+
+            return "Chờ thanh toán";
+        }
 
         // GET: Order/Checkout
         public ActionResult Checkout()
@@ -28,12 +50,12 @@ namespace _25DH110384_WebStore.Controllers
             }
 
             string username = Session["Username"].ToString();
-            var customer = db.Customers.SingleOrDefault(c => c.Username == username);
+            var customer = db.Customers.FirstOrDefault(c => c.Username == username);
 
             // Tự động tạo bản ghi Customer nếu chưa tồn tại trong CSDL
             if (customer == null)
             {
-                var user = db.Users.SingleOrDefault(u => u.Username == username);
+                var user = db.Users.FirstOrDefault(u => u.Username == username);
                 if (user == null)
                 {
                     return RedirectToAction("Login", "Account");
@@ -91,7 +113,7 @@ namespace _25DH110384_WebStore.Controllers
             }
 
             string username = Session["Username"].ToString();
-            var customer = db.Customers.SingleOrDefault(c => c.Username == username);
+            var customer = db.Customers.FirstOrDefault(c => c.Username == username);
 
             if (customer == null)
             {
@@ -115,16 +137,15 @@ namespace _25DH110384_WebStore.Controllers
             }).ToList();
 
             // Lưu đơn hàng với thời gian thực hiện tại
-            return SaveOrderAndRedirect(model, customer, cartItemsList, "Thanh toán tiền mặt");
+            return SaveOrderAndRedirect(model, customer, cartItemsList, "Đang xử lý");
         }
 
         private ActionResult SaveOrderAndRedirect(CheckoutVM model, Customer customer, List<CartItem> cartItems, string paymentStatus)
         {
-            DateTime currentDateTime = DateTime.Now;
             var order = new Order
             {
                 CustomerID = customer.CustomerID,
-                OrderDate = DateTime.Now, // Lưu chính xác ngày giờ bấm đặt hàng
+                OrderDate = DateTime.Now,
                 TotalAmount = model.TotalAmount,
                 PaymentStatus = paymentStatus,
                 PaymentMethod = model.PaymentMethod ?? "Tiền mặt",
@@ -151,7 +172,6 @@ namespace _25DH110384_WebStore.Controllers
         // GET: Order/OrderSuccess/5
         public ActionResult OrderSuccess(int id)
         {
-            // Include thêm Product để nạp đủ Tên và Ảnh sản phẩm ra View
             var order = db.Orders.Include("OrderDetails.Product").SingleOrDefault(o => o.OrderID == id);
             if (order == null)
             {
@@ -162,7 +182,7 @@ namespace _25DH110384_WebStore.Controllers
         }
 
         // GET: Order/MyOrder
-        public ActionResult MyOrder()
+        public ActionResult MyOrder(string searchTerm, string status = "Tất cả đơn", bool showAll = false)
         {
             if (Session["Username"] == null)
             {
@@ -170,43 +190,88 @@ namespace _25DH110384_WebStore.Controllers
             }
 
             string username = Session["Username"].ToString();
-            var customer = db.Customers.FirstOrDefault(c => c.Username == username);
+            string currentStatus = string.IsNullOrWhiteSpace(status) ? "Tất cả đơn" : status.Trim();
 
-            if (customer == null)
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.SelectedStatus = currentStatus;
+            ViewBag.ShowAll = showAll;
+            ViewBag.HasMore = false;
+
+            // Lấy toàn bộ CustomerID gắn với Username đang đăng nhập
+            var customerIds = db.Customers
+                                .Where(c => c.Username == username)
+                                .Select(c => (int?)c.CustomerID)
+                                .ToList();
+
+            if (!customerIds.Any())
             {
                 return View(new List<Order>());
             }
 
-            var orders = db.Orders
-                           .Include("OrderDetails.Product")
-                           .Where(o => o.CustomerID == customer.CustomerID)
-                           .OrderByDescending(o => o.OrderDate)
-                           .ToList();
+            var query = db.Orders
+                          .AsNoTracking()
+                          .Include("OrderDetails.Product")
+                          .Where(o => customerIds.Contains(o.CustomerID))
+                          .AsQueryable();
+
+            // 1. Tìm kiếm theo Mã đơn hàng hoặc Tên sản phẩm
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                string keyword = searchTerm.Trim().ToLower();
+                string numericPart = keyword.StartsWith("#") ? keyword.Substring(1) : keyword;
+                int searchOrderId;
+                bool isOrderId = int.TryParse(numericPart, out searchOrderId);
+
+                query = query.Where(o =>
+                    (isOrderId && o.OrderID == searchOrderId) ||
+                    o.OrderDetails.Any(od => od.Product != null &&
+                                             od.Product.ProductName != null &&
+                                             od.Product.ProductName.ToLower().Contains(keyword))
+                );
+            }
+
+            var orders = query
+                .OrderByDescending(o => o.OrderDate)
+                .ToList();
+
+            // Chuẩn hóa tên trạng thái để gom nhóm và lọc tab chính xác
+            foreach (var order in orders)
+            {
+                order.PaymentStatus = NormalizeOrderStatus(order.PaymentStatus);
+            }
+
+            // 2. Lọc theo từng tab trạng thái cụ thể (2 đơn gần nhất, Xem thêm tối đa 50 đơn)
+            if (currentStatus != "Tất cả đơn")
+            {
+                var statusOrders = orders.Where(o => o.PaymentStatus == currentStatus).ToList();
+                ViewBag.HasMore = !showAll && statusOrders.Count > 2;
+                orders = statusOrders.Take(showAll ? 50 : 2).ToList();
+            }
 
             return View(orders);
         }
 
-        // Mua lại đơn hàng cũ -> Đưa vào giỏ hàng và chuyển đến trang Giỏ hàng để người dùng tùy chỉnh số lượng
-        public ActionResult BuyAgain(int id)
+        // Mua lại -> Thêm sản phẩm vào Giỏ hàng với số lượng = 1
+        public ActionResult BuyAgain(int id, int? productId)
         {
-            // Kiểm tra đăng nhập
             if (Session["Username"] == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            // Tìm đơn hàng kèm chi tiết sản phẩm và sản phẩm
-            var db = new QuanLiKhachHangEntities1();
             var order = db.Orders
-                          .Include("OrderDetails.Product")
+                          .Include("OrderDetails.Product.Category")
                           .SingleOrDefault(o => o.OrderID == id);
 
             if (order != null && order.OrderDetails != null)
             {
-                // Lấy dịch vụ giỏ hàng thông quan Session
                 var cartService = new CartService(Session);
 
-                foreach (var detail in order.OrderDetails)
+                var detailsToAdd = productId.HasValue
+                    ? order.OrderDetails.Where(d => d.ProductID == productId.Value)
+                    : order.OrderDetails;
+
+                foreach (var detail in detailsToAdd)
                 {
                     if (detail.Product != null)
                     {
@@ -222,8 +287,16 @@ namespace _25DH110384_WebStore.Controllers
                 }
             }
 
-            // ĐÃ SỬA: Chuyển hướng sang trang Giỏ hàng (Cart/Index) thay vì trang Checkout
             return RedirectToAction("Index", "Cart");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

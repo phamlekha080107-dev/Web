@@ -1,0 +1,287 @@
+﻿@model _25DH110384_WebStore.Models.Order
+
+@{
+    ViewBag.Title = "Cập nhật trạng thái đơn hàng #" + Model.OrderID;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .status-wrapper {
+        max-width: 680px;
+        margin: 30px auto;
+        padding: 0 15px;
+    }
+
+    .status-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e6ece9;
+        overflow: hidden;
+    }
+
+    .status-header {
+        background: linear-gradient(135deg, #1e824c 0%, #156238 100%);
+        color: #ffffff;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .status-header-title {
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: 0.3px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .order-code-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .status-body {
+        padding: 26px 28px;
+    }
+
+    /* KHỐI THÔNG TIN TÓM TẮT ĐƠN HÀNG */
+    .order-summary-grid {
+        background-color: #f8fbf9;
+        border: 1px solid #d4edda;
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 20px;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .summary-label {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #6c757d;
+        letter-spacing: 0.4px;
+    }
+
+    .summary-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #212529;
+    }
+
+        .summary-value.price {
+            color: #d9534f;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+    .current-status-pill {
+        display: inline-block;
+        background-color: #e8f5e9;
+        color: #1e824c;
+        border: 1px solid #c3e6cb;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+    /* FORM CHỌN TRẠNG THÁI */
+    .form-section-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .status-select {
+        width: 100%;
+        height: 44px;
+        padding: 8px 14px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+        background-color: #fff;
+        border: 1.5px solid #ced4da;
+        border-radius: 8px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        outline: none;
+        cursor: pointer;
+    }
+
+        .status-select:focus {
+            border-color: #1e824c;
+            box-shadow: 0 0 0 3px rgba(30, 130, 76, 0.15);
+        }
+
+    .helper-hint {
+        font-size: 12.5px;
+        color: #6c757d;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* NÚT HÀNH ĐỘNG */
+    .status-actions {
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-back-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        color: #495057;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-back-detail:hover {
+            background-color: #f1f3f5;
+            color: #212529;
+            text-decoration: none;
+        }
+
+    .btn-save-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 24px;
+        border-radius: 8px;
+        border: none;
+        background-color: #1e824c;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(30, 130, 76, 0.25);
+        transition: all 0.2s ease;
+    }
+
+        .btn-save-status:hover {
+            background-color: #16653b;
+            transform: translateY(-1px);
+        }
+
+    @@media (max-width: 576px) {
+        .order-summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .status-actions {
+            flex-direction: column-reverse;
+        }
+
+            .status-actions a,
+            .status-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+    }
+</style>
+
+<div class="status-wrapper">
+    <div class="status-card">
+        <div class="status-header">
+            <h3 class="status-header-title">
+                <i class="fas fa-sync-alt"></i> CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
+            </h3>
+            <span class="order-code-badge">Mã ĐH: #@Model.OrderID</span>
+        </div>
+
+        <div class="status-body">
+            <!-- THÔNG TIN ĐƠN HÀNG -->
+            <div class="order-summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label">Khách hàng</span>
+                    <span class="summary-value">
+                        @(Model.Customer != null ? (string.IsNullOrEmpty(Model.Customer.CustomerName) ? Model.Customer.Username : Model.Customer.CustomerName) : "Khách vãng lai")
+                    </span>
+                </div>
+
+                <div class="summary-item">
+                    <span class="summary-label">Ngày đặt hàng</span>
+                    <span class="summary-value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+
+                <div class="summary-item">
+                    <span class="summary-label">Trạng thái hiện tại</span>
+                    <span class="current-status-pill">
+                        @(string.IsNullOrEmpty(Model.PaymentStatus) ? "Chưa cập nhật" : Model.PaymentStatus)
+                    </span>
+                </div>
+
+                <div class="summary-item">
+                    <span class="summary-label">Tổng tiền thanh toán</span>
+                    <span class="summary-value price">@(((decimal)Model.TotalAmount).ToString("N0")) VNĐ</span>
+                </div>
+            </div>
+
+            <!-- FORM CẬP NHẬT -->
+            @using (Html.BeginForm("UpdateStatus", "Orders", new { area = "Admin" }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.OrderID)
+
+                <div>
+                    <label for="PaymentStatus" class="form-section-label">
+                        <i class="fas fa-tasks" style="color: #1e824c; margin-right: 5px;"></i>
+                        Chọn trạng thái thanh toán / xử lý mới
+                    </label>
+
+                    <select id="PaymentStatus" name="PaymentStatus" class="status-select">
+                        <option value="Chưa thanh toán" @(Model.PaymentStatus == "Chưa thanh toán" ? "selected" : "")>Chưa thanh toán</option>
+                        <option value="Thanh toán tiền mặt" @(Model.PaymentStatus == "Thanh toán tiền mặt" ? "selected" : "")>Thanh toán tiền mặt</option>
+                        <option value="Đã thanh toán" @(Model.PaymentStatus == "Đã thanh toán" ? "selected" : "")>Đã thanh toán</option>
+                        <option value="Đang giao hàng" @(Model.PaymentStatus == "Đang giao hàng" ? "selected" : "")>Đang giao hàng</option>
+                        <option value="Đã giao hàng" @(Model.PaymentStatus == "Đã giao hàng" ? "selected" : "")>Đã giao hàng</option>
+                        <option value="Đã hủy" @(Model.PaymentStatus == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                    </select>
+
+                    <div class="helper-hint">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Trạng thái mới sẽ được cập nhật trực tiếp vào chi tiết đơn hàng của khách.</span>
+                    </div>
+                </div>
+
+                <div class="status-actions">
+                    <a href="@Url.Action("DetailedOrder", "Orders", new { area = "Admin", id = Model.OrderID })" class="btn-back-detail">
+                        <i class="fas fa-arrow-left"></i> Hủy / Quay lại
+                    </a>
+                    <button type="submit" class="btn-save-status">
+                        <i class="fas fa-save"></i> Lưu trạng thái
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

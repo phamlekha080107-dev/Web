@@ -1,0 +1,162 @@
+﻿@model _25DH110384_WebStore.Models.Order
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .detail-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e9ecef;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    .detail-header {
+        background-color: #1e824c;
+        color: white;
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .detail-body {
+        padding: 24px;
+    }
+
+    .info-box {
+        background-color: #f8fbf9;
+        border: 1px solid #d4edda;
+        border-radius: 6px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+    }
+
+    .info-row {
+        display: flex;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .info-label {
+        width: 190px;
+        font-weight: 700;
+        color: #495057;
+    }
+
+    .status-pill {
+        background-color: #e8f5e9;
+        color: #1e824c;
+        border: 1px solid #c8e6c9;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .product-thumb {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+        border: 1px solid #eee;
+        border-radius: 4px;
+    }
+
+    .action-footer {
+        margin-top: 24px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+</style>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <span><i class="fas fa-file-invoice" style="margin-right: 8px;"></i> CHI TIẾT ĐƠN HÀNG #@Model.OrderID</span>
+        <span style="font-size: 14px; font-weight: normal;">Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+    </div>
+
+    <div class="detail-body">
+        <div class="info-box">
+            <div class="info-row">
+                <span class="info-label">Khách hàng:</span>
+                <span>@(Model.Customer != null ? (string.IsNullOrEmpty(Model.Customer.CustomerName) ? Model.Customer.Username : Model.Customer.CustomerName) : "Khách vãng lai")</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Địa chỉ giao hàng:</span>
+                <span>@Model.ShippingAddress</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Phương thức thanh toán:</span>
+                <span>@(string.IsNullOrEmpty(Model.PaymentMethod) ? "Tiền mặt" : Model.PaymentMethod)</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Trạng thái đơn hàng:</span>
+                <span class="status-pill">@(string.IsNullOrEmpty(Model.PaymentStatus) ? "Chưa cập nhật" : Model.PaymentStatus)</span>
+            </div>
+        </div>
+
+        <h4 style="font-weight: 700; margin-bottom: 14px;">Danh sách sản phẩm</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr style="background-color: #f8f9fa;">
+                        <th class="text-center" style="width: 80px;">Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th class="text-center" style="width: 100px;">Số lượng</th>
+                        <th class="text-right" style="width: 150px;">Đơn giá</th>
+                        <th class="text-right" style="width: 160px;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.OrderDetails != null && Model.OrderDetails.Any())
+                    {
+                        foreach (var item in Model.OrderDetails)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <img src="@(item.Product != null ? item.Product.ProductImage : "/Images/default.png")" class="product-thumb" alt="Product" />
+                                </td>
+                                <td style="vertical-align: middle; font-weight: 600;">
+                                    @(item.Product != null ? item.Product.ProductName : "Sản phẩm #" + item.ProductID)
+                                </td>
+                                <td class="text-center" style="vertical-align: middle;">x@(item.Quantity)</td>
+                                <td class="text-right" style="vertical-align: middle;">@item.UnitPrice.ToString("N0") VNĐ</td>
+                                <td class="text-right" style="vertical-align: middle; font-weight: 600;">
+                                    @(Convert.ToDecimal(item.TotalPrice).ToString("N0")) VNĐ
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-right" style="font-size: 16px;">Tổng tiền thanh toán:</th>
+                        <th class="text-right" style="color: #d9534f; font-size: 17px;">
+                            @(((decimal)Model.TotalAmount).ToString("N0")) VNĐ
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="action-footer">
+            <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="btn btn-default">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+            <a href="@Url.Action("UpdateStatus", "Orders", new { area = "Admin", id = Model.OrderID })" class="btn btn-warning" style="font-weight: 600;">
+                <i class="fas fa-edit"></i> Cập nhật trạng thái
+            </a>
+        </div>
+    </div>
+</div>

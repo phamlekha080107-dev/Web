@@ -24,7 +24,7 @@
                         ★★★★☆ <span style="color:#aaa;">(Đã bán: @product.OrderDetails.Count)</span>
                     </div>
                     <div class="product-price">
-                        @String.Format("{0:N0}", product.ProductPrice) đ
+                        @product.ProductPrice.ToString("#,##0").Replace(",", ".") đ
                     </div>
                     <a href="@Url.Action("AddToCart", "Cart", new { id = product.ProductID })" class="btn-add-cart" style="display: block; text-align: center; box-sizing: border-box;">
                         <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
