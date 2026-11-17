@@ -312,6 +312,7 @@
     <Content Include="Views\Account\ProfileInfo.cshtml" />
     <Content Include="Views\Home\PagePhuKien.cshtml" />
     <Content Include="Views\Home\PageThietBi.cshtml" />
+    <Content Include="Views\Paypal\FailureView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -319,7 +320,6 @@
     <Folder Include="Areas\Admin\Views\HomePage\" />
     <Folder Include="Areas\Customer\Content\" />
     <Folder Include="Areas\Customer\Controllers\" />
-    <Folder Include="Views\Paypal\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

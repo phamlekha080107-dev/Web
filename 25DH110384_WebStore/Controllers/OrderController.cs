@@ -120,10 +120,11 @@ namespace _25DH110384_WebStore.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Nếu chọn thanh toán Paypal
+            // Nếu chọn thanh toán Paypal -> lưu tạm thông tinCheckoutVM và chuyển sang PaypalController
             if (model.PaymentMethod == "Paypal")
             {
-                return RedirectToAction("PaymentWithPaypal", "Paypal", model);
+                Session["CheckoutModel"] = model;
+                return RedirectToAction("PaymentWithPaypal", "Paypal");
             }
 
             // Chuyển đổi item để lưu đơn hàng
@@ -140,13 +141,54 @@ namespace _25DH110384_WebStore.Controllers
             return SaveOrderAndRedirect(model, customer, cartItemsList, "Đang xử lý");
         }
 
+        // GET: Order/CreateOrder (Nhận kết quả sau khi thanh toán PayPal thành công)
+        public ActionResult CreateOrder()
+        {
+            var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
+            if (cart == null || cart.Items == null || !cart.Items.Any())
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+
+            if (Session["Username"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            string username = Session["Username"].ToString();
+            var customer = db.Customers.FirstOrDefault(c => c.Username == username);
+            if (customer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var model = Session["CheckoutModel"] as CheckoutVM ?? new CheckoutVM
+            {
+                TotalAmount = cart.Items.Sum(i => i.TotalPrice),
+                PaymentMethod = "Paypal"
+            };
+            model.PaymentMethod = "Paypal";
+            Session.Remove("CheckoutModel");
+
+            var cartItemsList = cart.Items.Select(i => new CartItem
+            {
+                ProductID = i.ProductID,
+                ProductName = i.ProductName,
+                ProductImage = i.ProductImage,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity,
+            }).ToList();
+
+            return SaveOrderAndRedirect(model, customer, cartItemsList, "Đã thanh toán (PayPal)");
+        }
+
         private ActionResult SaveOrderAndRedirect(CheckoutVM model, Customer customer, List<CartItem> cartItems, string paymentStatus)
         {
             var order = new Order
             {
                 CustomerID = customer.CustomerID,
                 OrderDate = DateTime.Now,
-                TotalAmount = model.TotalAmount,
+                TotalAmount = model.TotalAmount > 0 ? model.TotalAmount : cartItems.Sum(i => i.TotalPrice),
                 PaymentStatus = paymentStatus,
                 PaymentMethod = model.PaymentMethod ?? "Tiền mặt",
                 ShippingMethod = model.ShippingMethod ?? "Giao hàng nhanh",

@@ -1,9 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using _25DH110384_WebStore.Models;
+﻿using _25DH110384_WebStore.Models;
 using _25DH110384_WebStore.Models.ViewModel;
 using PayPal.Api;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
 using Item = PayPal.Api.Item;
 using Payer = PayPal.Api.Payer;
 
@@ -15,18 +19,39 @@ namespace _25DH110384_WebStore.Controllers
 
         private Payment CreatePayment(APIContext apiContext, string redirectUrl, CheckoutVM model)
         {
+            // 1. Lấy lại giỏ hàng từ Session nếu model.CartItems bị null khi Redirect
+            if (model.CartItems == null || !model.CartItems.Any())
+            {
+                var cart = Session["Cart"] as Cart;
+                if (cart != null && cart.Items != null)
+                {
+                    model.CartItems = cart.Items.ToList();
+                }
+            }
+
+            // 2. Quy đổi VND -> USD (tỷ giá 25.000) để không vượt mức 10.000 USD của Sandbox
+            const decimal exchangeRate = 25000m;
             var itemList = new ItemList() { items = new List<Item>() };
+            decimal subtotalUSD = 0m;
+
             foreach (var item in model.CartItems)
             {
+                decimal priceUSD = Math.Round(item.UnitPrice / exchangeRate, 2);
+                if (priceUSD < 0.01m) priceUSD = 0.01m;
+
+                subtotalUSD += priceUSD * item.Quantity;
+
                 itemList.items.Add(new Item()
                 {
                     name = item.ProductName,
                     currency = "USD",
-                    price = item.UnitPrice.ToString(),
+                    price = priceUSD.ToString("0.00", CultureInfo.InvariantCulture),
                     quantity = item.Quantity.ToString(),
                     sku = item.ProductID.ToString()
                 });
             }
+
+            string totalStr = subtotalUSD.ToString("0.00", CultureInfo.InvariantCulture);
 
             var payer = new Payer() { payment_method = "paypal" };
 
@@ -38,22 +63,22 @@ namespace _25DH110384_WebStore.Controllers
 
             var details = new Details()
             {
-                tax = "0",
-                shipping = "0",
-                subtotal = model.TotalAmount.ToString()
+                tax = "0.00",
+                shipping = "0.00",
+                subtotal = totalStr
             };
 
             var amount = new Amount()
             {
                 currency = "USD",
-                total = model.TotalAmount.ToString(),
+                total = totalStr,
                 details = details
             };
 
             var transactionList = new List<Transaction>();
             transactionList.Add(new Transaction()
             {
-                description = "Transaction description",
+                description = "Thanh toan don hang PHONE & ACCES",
                 invoice_number = Convert.ToString((new Random()).Next(100000)),
                 amount = amount,
                 item_list = itemList
@@ -72,7 +97,14 @@ namespace _25DH110384_WebStore.Controllers
 
         private APIContext GetAPIContext()
         {
-            var config = ConfigManager.Instance.GetProperties();
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            var config = new Dictionary<string, string>
+            {
+                { "mode", ConfigurationManager.AppSettings["PayPalMode"] },
+                { "clientId", ConfigurationManager.AppSettings["PayPalClientId"] },
+                { "clientSecret", ConfigurationManager.AppSettings["PayPalClientSecret"] }
+            };
             var accessToken = new OAuthTokenCredential(config).GetAccessToken();
             return new APIContext(accessToken);
         }
@@ -87,12 +119,18 @@ namespace _25DH110384_WebStore.Controllers
 
                 if (string.IsNullOrEmpty(payerId))
                 {
-                    string baseURI = Request.Url.Scheme + "://" + Request.Url.Authority + "/PayPal/PaymentWithPaypal?";
+                    // Lưu lại đầy đủ thông tin CheckoutVM trước khi rời trang sang PayPal
+                    if (model.OrderDate == DateTime.MinValue)
+                    {
+                        model.OrderDate = DateTime.Now;
+                    }
+                    Session["CheckoutModel"] = model;
+
+                    string baseURI = Request.Url.Scheme + "://" + Request.Url.Authority + "/Paypal/PaymentWithPaypal?";
                     var guid = Convert.ToString((new Random()).Next(100000));
                     var createdPayment = CreatePayment(apiContext, baseURI + "guid=" + guid, model);
 
                     var links = createdPayment.links.GetEnumerator();
-
                     string paypalRedirectUrl = null;
                     while (links.MoveNext())
                     {
@@ -113,16 +151,27 @@ namespace _25DH110384_WebStore.Controllers
 
                     if (executedPayment.state.ToLower() != "approved")
                     {
+                        ViewBag.ErrorMessage = "Trạng thái thanh toán chưa được duyệt: " + executedPayment.state;
                         return View("FailureView");
                     }
+
+                    // Khôi phục lại CheckoutVM ban đầu để CreateOrder lưu đúng CustomerID, địa chỉ và tổng tiền
+                    var savedModel = Session["CheckoutModel"] as CheckoutVM ?? model;
+                    Session.Remove("CheckoutModel");
+
+                    return RedirectToAction("CreateOrder", "Order", savedModel);
                 }
+            }
+            catch (PayPal.PaymentsException pex)
+            {
+                ViewBag.ErrorMessage = !string.IsNullOrEmpty(pex.Response) ? pex.Response : pex.Message;
+                return View("FailureView");
             }
             catch (Exception ex)
             {
+                ViewBag.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return View("FailureView");
             }
-
-            return RedirectToAction("CreateOrder", "Order", model);
         }
 
         private Payment ExecutePayment(APIContext apiContext, string payerId, string paymentId)

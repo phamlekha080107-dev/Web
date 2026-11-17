@@ -7,12 +7,11 @@
 
     string selectedStatus = ViewBag.SelectedStatus as string ?? "Tất cả đơn";
     string searchTerm = ViewBag.SearchTerm as string ?? "";
-    bool showAll = ViewBag.ShowAll != null && (bool)ViewBag.ShowAll;
 
     var allOrders = Model != null ? Model.ToList() : new List<_25DH110384_WebStore.Models.Order>();
 
     var statusTabs = new List<string>
-    {
+{
         "Tất cả đơn",
         "Chờ thanh toán",
         "Đang xử lý",
@@ -22,7 +21,7 @@
     };
 
     var groupStatuses = new List<string>
-    {
+{
         "Chờ thanh toán",
         "Đang xử lý",
         "Đang vận chuyển",
@@ -659,25 +658,6 @@
             gap: 12px;
         }
 
-        .btn-detail {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 18px;
-            border-radius: 9px;
-            border: 1px solid #d5e5df;
-            background: #f8fbfa;
-            color: var(--primary-color);
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-            .btn-detail:hover {
-                background: #e6f4f0;
-                border-color: var(--secondary-color);
-            }
-
         .btn-rebuy {
             display: inline-flex;
             align-items: center;
@@ -960,7 +940,6 @@
 
                         @foreach (var order in visibleOrders)
                         {
-                            var firstDetail = order.OrderDetails != null ? order.OrderDetails.FirstOrDefault() : null;
                             <div class="order-card">
                                 <div class="order-header">
                                     <div class="order-meta">
@@ -1021,12 +1000,6 @@
                                     </div>
 
                                     <div class="order-actions">
-                                        @if (firstDetail != null)
-                                        {
-                                            <a href="@Url.Action("ProductDetails", "Home", new { id = firstDetail.ProductID })" class="btn-detail">
-                                                <i class="fas fa-eye"></i> Xem chi tiết
-                                            </a>
-                                        }
                                         <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID })" class="btn-rebuy">
                                             <i class="fas fa-redo-alt"></i> Mua lại
                                         </a>
@@ -1052,7 +1025,6 @@
             <!-- CÁC TAB TRẠNG THÁI CỤ THỂ (2 ĐƠN GẦN NHẤT HOẶC TỐI ĐA 50 ĐƠN KHI BẤM XEM THÊM) -->
             foreach (var order in allOrders)
             {
-                var firstDetail = order.OrderDetails != null ? order.OrderDetails.FirstOrDefault() : null;
                 <div class="order-card">
                     <div class="order-header">
                         <div class="order-meta">
@@ -1113,12 +1085,6 @@
                         </div>
 
                         <div class="order-actions">
-                            @if (firstDetail != null)
-                            {
-                                @*<a href="@Url.Action("ProductDetails", "Home", new { id = firstDetail.ProductID })" class="btn-detail">
-                                    <i class="fas fa-eye"></i> Xem chi tiết
-                                </a>*@
-                            }
                             <a href="@Url.Action("BuyAgain", "Order", new { id = order.OrderID })" class="btn-rebuy">
                                 <i class="fas fa-redo-alt"></i> Mua lại
                             </a>
@@ -1127,7 +1093,7 @@
                 </div>
             }
 
-            if (!showAll && allOrders.Count >= 2)
+            if (ViewBag.HasMore != null && (bool)ViewBag.HasMore)
             {
                 <div class="see-more-row">
                     <a href="@Url.Action("MyOrder", "Order", new { status = selectedStatus, searchTerm = searchTerm, showAll = true })" class="btn-see-more">

@@ -1,0 +1,245 @@
+﻿@{
+    Layout = null;
+    var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
+    int cartCount = (cart != null && cart.Items != null) ? cart.Items.Count() : 0;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán thất bại - PHONE & ACCES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #0b4d3c;
+            --secondary-color: #1a8f6d;
+            --text-dark: #333;
+            --text-gray: #666;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header-top {
+            background-color: #fff;
+            padding: 15px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            font-size: 20px;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--secondary-color);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .failure-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .failure-card {
+            background: #fff;
+            max-width: 520px;
+            width: 100%;
+            padding: 40px 36px;
+            border-radius: 16px;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.04);
+            text-align: center;
+        }
+
+        .failure-icon {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: #fdf2f2;
+            color: #d93025;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            margin-bottom: 18px;
+        }
+
+        .failure-card h1 {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: #d93025;
+        }
+
+        .failure-card p {
+            margin: 0 0 20px 0;
+            font-size: 14.5px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .error-detail {
+            background: #fdf4f4;
+            border: 1px solid #f5c6cb;
+            color: #b71c1c;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 24px;
+            text-align: left;
+            word-break: break-word;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary-custom {
+            background: var(--secondary-color);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+            .btn-primary-custom:hover {
+                background: var(--primary-color);
+            }
+
+        .btn-outline-custom {
+            background: #fff;
+            color: var(--primary-color);
+            border: 1px solid #cce7df;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+            .btn-outline-custom:hover {
+                background: #e6f4f0;
+            }
+
+        .phone-footer {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 35px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+            .phone-footer h3 {
+                margin: 0 0 6px 0;
+                font-size: 20px;
+            }
+
+            .phone-footer p {
+                margin: 0;
+                color: #cce5de;
+                font-size: 14px;
+            }
+    </style>
+</head>
+<body>
+
+    <header class="header-top">
+        <a href="@Url.Action("Index", "Home")" class="logo">
+            <i class="fas fa-shopping-bag"></i> PHONE & ACCES
+        </a>
+
+        <a href="@Url.Action("Index", "Cart")" class="icon-btn" title="Giỏ hàng">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge">@cartCount</span>
+        </a>
+    </header>
+
+    <main class="failure-wrapper">
+        <div class="failure-card">
+            <div class="failure-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h1>Thanh toán PayPal không thành công</h1>
+            <p>Giao dịch đã bị hủy hoặc xảy ra sự cố trong quá trình kết nối với cổng thanh toán PayPal.</p>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="error-detail">
+                    <strong>Chi tiết lỗi:</strong> @ViewBag.ErrorMessage
+                </div>
+            }
+
+            <div class="action-group">
+                <a href="@Url.Action("Index", "Cart")" class="btn-primary-custom">
+                    <i class="fas fa-shopping-cart"></i> Quay lại giỏ hàng
+                </a>
+                <a href="@Url.Action("Index", "Home")" class="btn-outline-custom">
+                    <i class="fas fa-home"></i> Về trang chủ
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="phone-footer">
+        <div>
+            <h3>PHONE & ACCES</h3>
+            <p>Điện thoại và phụ kiện công nghệ chính hãng dành cho bạn.</p>
+        </div>
+        <p>© 2026 PHONE & ACCES. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

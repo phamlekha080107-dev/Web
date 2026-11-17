@@ -22,7 +22,7 @@ namespace _25DH110384_WebStore.Areas.Admin.Controllers
                 "Đang xử lý",
                 "Đã xử lý",
                 "Đang vận chuyển",
-                
+                "Đã giao",
                 "Đã hủy"
             };
         }
