@@ -1,26 +1,207 @@
-﻿﻿
-@model _25DH110384_WebStore.Models.ViewModel.ProductDetailVM
+﻿@model _25DH110384_WebStore.Models.ViewModel.ProductDetailVM
 @using PagedList.Mvc
 
-<link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerHome.css" />
+<style>
+    .pv-related-heading {
+        font-size: 18px;
+        font-weight: 700;
+        color: #181c1b;
+        margin: 0 0 20px 0;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #eef1f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
 
-<!-- Hiển thị danh sách sản phẩm -->
+    .pv-related-heading-left {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+        .pv-related-heading-left i {
+            color: #1a8f6d;
+            font-size: 16px;
+        }
+
+    .pv-related-count {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #0b4d3c;
+        background: #e8f5f1;
+        border: 1px solid #cce5de;
+        padding: 3px 11px;
+        border-radius: 999px;
+    }
+
+    .pv-related-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pv-related-card {
+        background: #ffffff;
+        border: 1px solid #e9eded;
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.25s ease;
+    }
+
+        .pv-related-card:hover {
+            border-color: #cce5de;
+            box-shadow: 0 12px 28px rgba(11, 77, 60, 0.08);
+            transform: translateY(-4px);
+        }
+
+    .pv-related-thumb {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f6f8f7;
+        border: 1px solid #eef1f0;
+        border-radius: 11px;
+        height: 155px;
+        padding: 14px;
+        margin-bottom: 14px;
+        overflow: hidden;
+    }
+
+        .pv-related-thumb img {
+            max-width: 100%;
+            max-height: 126px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+    .pv-related-card:hover .pv-related-thumb img {
+        transform: scale(1.05);
+    }
+
+    .pv-related-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: space-between;
+        text-align: center;
+    }
+
+    .pv-related-name {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #181c1b;
+        margin: 0 0 10px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 39px;
+        transition: color 0.2s ease;
+    }
+
+        .pv-related-name a:hover {
+            color: #1a8f6d;
+        }
+
+    .pv-related-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed #eef1f0;
+    }
+
+    .pv-related-price {
+        font-size: 15.5px;
+        font-weight: 800;
+        color: #d93025;
+        margin: 0;
+    }
+
+    .pv-related-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #f3f7f5;
+        border: 1px solid #dce8e4;
+        color: #0b4d3c;
+        font-size: 12.5px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .pv-related-card:hover .pv-related-btn {
+        background: #1a8f6d;
+        border-color: #1a8f6d;
+        color: #ffffff;
+    }
+
+    @@media (max-width: 768px) {
+        .pv-related-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .pv-related-thumb {
+            height: 130px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .pv-related-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
 @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
 {
-    <section class="container-fluid featureProd">
-        <h4 style="font-weight:bold;">Sản phẩm tương tự</h4>
-        <ul class="feature-container">
+    <section class="pv-related-section">
+        <div class="pv-related-heading">
+            <div class="pv-related-heading-left">
+                <i class="fas fa-layer-group"></i>
+                <span>Sản phẩm tương tự</span>
+            </div>
+            <span class="pv-related-count">@Model.RelatedProducts.Count() sản phẩm</span>
+        </div>
+
+        <ul class="pv-related-grid">
             @foreach (var product in Model.RelatedProducts)
             {
-                <li class="fproduct-item">
-                    <div>
-                        <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
-                            <img src="@Html.DisplayFor(modelItem => product.ProductImage)" />
-                        </a>
-                    </div>
-                    <div>
-                        <h5>@Html.DisplayFor(modelItem => product.ProductName)</h5>
-                        <p class="prodSale">@Html.DisplayFor(modelItem => product.ProductPrice)</p>
+                <li class="pv-related-card">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })" class="pv-related-thumb">
+                        <img src="@product.ProductImage" alt="@product.ProductName" />
+                    </a>
+
+                    <div class="pv-related-info">
+                        <h5 class="pv-related-name">
+                            <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                                @product.ProductName
+                            </a>
+                        </h5>
+
+                        <div class="pv-related-footer">
+                            <p class="pv-related-price">
+                                @product.ProductPrice.ToString("#,##0").Replace(",", ".") đ
+                            </p>
+                            <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })" class="pv-related-btn">
+                                Xem chi tiết <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                            </a>
+                        </div>
                     </div>
                 </li>
             }

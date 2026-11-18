@@ -1,131 +1,1237 @@
 ﻿@model _25DH110384_WebStore.Models.ViewModel.ProfileVM
 
 @{
-    ViewBag.Title = "Thông tin tài khoản";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc Layout trang chủ của Kha
+    Layout = null;
+    var cart = Session["Cart"] as _25DH110384_WebStore.Models.ViewModel.Cart;
+    int cartCount = (cart != null && cart.Items != null) ? cart.Items.Count() : 0;
+    string currentUsername = Session["Username"] != null ? Session["Username"].ToString() : Model.Username;
+    string displayName = !string.IsNullOrWhiteSpace(Model.CustomerName) ? Model.CustomerName : currentUsername;
+    string avatarInitial = !string.IsNullOrWhiteSpace(displayName) ? displayName.Trim().Substring(0, 1).ToUpper() : "U";
 }
 
-<style>
-    .profile-container {
-        max-width: 650px;
-        margin: 40px auto;
-        background: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e9ecef;
-        overflow: hidden;
-    }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin tài khoản - PHONE & ACCES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    .profile-header {
-        background-color: #1e824c;
-        color: white;
-        padding: 20px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        text-align: center;
-    }
+    <style>
+        :root {
+            --primary-color: #0b4d3c;
+            --secondary-color: #1a8f6d;
+            --dark-surface: #0d1714;
+            --dark-card: #152420;
+            --bg-light: #f4f6f8;
+            --text-dark: #181c1b;
+            --text-gray: #646e6b;
+            --border-color: #e6eae8;
+            --container-max: 1280px;
+        }
 
-    .profile-body {
-        padding: 30px;
-    }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-    .form-group {
-        margin-bottom: 20px;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-        .form-group label {
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f8f7;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: clip;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .page-container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* ================= 1. TOP ANNOUNCEMENT BAR ================= */
+        .top-promo-bar {
+            background-color: #0b1411;
+            color: #d7e2de;
+            font-size: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+            .top-promo-bar .page-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+        .promo-highlights {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+            .promo-highlights span.sep {
+                color: #4b5c57;
+            }
+
+        .promo-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-weight: 500;
+        }
+
+        /* ================= 2. MAIN HEADER ================= */
+        .header-top {
+            background-color: #ffffff;
+            border-bottom: 1px solid #ecefef;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+            .header-top .page-container {
+                height: 70px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+            }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            letter-spacing: -0.4px;
+            white-space: nowrap;
+        }
+
+            .logo i {
+                color: var(--secondary-color);
+            }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            font-size: 14.5px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+            .nav-links a {
+                position: relative;
+                padding: 6px 0;
+                color: #2d3533;
+                transition: color 0.2s ease;
+            }
+
+                .nav-links a::after {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 0;
+                    height: 2px;
+                    background-color: var(--secondary-color);
+                    border-radius: 2px;
+                    transition: width 0.25s ease;
+                }
+
+                .nav-links a:hover,
+                .nav-links a.active {
+                    color: var(--secondary-color);
+                    font-weight: 600;
+                }
+
+                    .nav-links a:hover::after,
+                    .nav-links a.active::after {
+                        width: 100%;
+                    }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+            .header-actions form {
+                margin: 0;
+            }
+
+        .search-bar {
+            background: #f3f5f6;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            width: 260px;
+            transition: all 0.2s ease;
+        }
+
+            .search-bar:focus-within {
+                background: #fff;
+                border-color: var(--secondary-color);
+                box-shadow: 0 0 0 3px rgba(26, 143, 109, 0.12);
+            }
+
+            .search-bar input {
+                border: none;
+                background: transparent;
+                outline: none;
+                padding-left: 10px;
+                width: 100%;
+                font-family: inherit;
+                font-size: 13.5px;
+                color: var(--text-dark);
+            }
+
+        .icon-btn {
+            font-size: 19px;
+            color: var(--text-dark);
+            cursor: pointer;
+            position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+            .icon-btn:hover {
+                background: #f2f5f4;
+                color: var(--primary-color);
+            }
+
+        .cart-badge {
+            position: absolute;
+            top: 0;
+            right: -2px;
+            background: var(--secondary-color);
+            color: #fff;
+            font-size: 10.5px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 999px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* USER DROPDOWN */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #e8f5f1;
+            color: var(--primary-color);
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 13.5px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.25s;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+            .user-trigger:hover {
+                background-color: var(--secondary-color);
+                color: #fff;
+            }
+
+        .user-dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            min-width: 205px;
+            z-index: 1000;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.35s;
+        }
+
+            .user-dropdown-menu::before {
+                content: "";
+                position: absolute;
+                top: -15px;
+                left: 0;
+                width: 100%;
+                height: 18px;
+                background: transparent;
+            }
+
+        .user-dropdown:hover .user-dropdown-menu,
+        .user-dropdown.open .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+        }
+
+        .user-dropdown-menu a {
+            padding: 11px 18px;
             display: block;
+            border-bottom: 1px solid #f1f3f2;
+            font-size: 13.5px;
+            font-weight: 500;
         }
 
-    .form-control {
-        border-radius: 6px;
-        padding: 10px 12px;
-        border: 1px solid #ced4da;
-        width: 100%;
-    }
+            .user-dropdown-menu a:first-child {
+                border-radius: 12px 12px 0 0;
+            }
 
-    .btn-save {
-        background-color: #1e824c;
-        color: white;
-        padding: 10px 25px;
-        font-weight: 600;
-        border-radius: 6px;
-        border: none;
-        transition: background-color 0.2s;
-    }
+            .user-dropdown-menu a:last-child {
+                border-bottom: none;
+                border-radius: 0 0 12px 12px;
+            }
 
-        .btn-save:hover {
-            background-color: #145c35;
+            .user-dropdown-menu a:hover {
+                background: #f5faf8;
+                color: var(--secondary-color);
+            }
+
+        /* ================= 3. NỘI DUNG TRANG HỒ SƠ ================= */
+        .pa-account-page {
+            flex: 1;
+            padding: 34px 0 64px 0;
         }
 
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        border: 1px solid #c3e6cb;
-    }
-</style>
+        .pa-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 22px;
+        }
 
-<div class="profile-container">
-    <div class="profile-header">
-        <i class="fas fa-user-cog" style="margin-right: 8px;"></i> THÔNG TIN TÀI KHOẢN CÁ NHÂN
+            .pa-breadcrumb a:hover {
+                color: var(--secondary-color);
+            }
+
+            .pa-breadcrumb .active {
+                color: var(--primary-color);
+                font-weight: 600;
+            }
+
+        .pa-grid-layout {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            gap: 26px;
+            align-items: start;
+        }
+
+        /* CỘT TRÁI: THẺ THÀNH VIÊN & MENU */
+        .pa-sidebar-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e7ecea;
+            box-shadow: 0 8px 24px rgba(11, 22, 19, 0.04);
+            overflow: hidden;
+        }
+
+        .pa-sidebar-banner {
+            height: 88px;
+            background: radial-gradient(circle at 80% 30%, #16382e 0%, #0b1613 65%, #070d0b 100%);
+            position: relative;
+        }
+
+        .pa-sidebar-user {
+            text-align: center;
+            padding: 0 20px 24px 20px;
+            border-bottom: 1px solid #eef1f0;
+        }
+
+        .pa-avatar-circle {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            color: var(--primary-color);
+            border: 4px solid #ffffff;
+            box-shadow: 0 6px 16px rgba(11, 77, 60, 0.18);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
+            margin-top: -39px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e8f5f1, #bce8da);
+            position: relative;
+            z-index: 2;
+        }
+
+        .pa-user-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 6px 0;
+            word-break: break-word;
+        }
+
+        .pa-user-handle {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: #e8f5f1;
+            padding: 3px 12px;
+            border-radius: 999px;
+        }
+
+        .pa-nav-menu {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .pa-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3533;
+            transition: all 0.2s ease;
+        }
+
+            .pa-nav-item i {
+                width: 18px;
+                text-align: center;
+                color: var(--text-gray);
+                font-size: 15px;
+                transition: color 0.2s ease;
+            }
+
+            .pa-nav-item:hover {
+                background: #f5faf8;
+                color: var(--primary-color);
+            }
+
+                .pa-nav-item:hover i {
+                    color: var(--secondary-color);
+                }
+
+            .pa-nav-item.active {
+                background: #e8f5f1;
+                color: var(--primary-color);
+                font-weight: 600;
+            }
+
+                .pa-nav-item.active i {
+                    color: var(--secondary-color);
+                }
+
+        /* CỘT PHẢI: FORM HỒ SƠ */
+        .pa-main-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e7ecea;
+            box-shadow: 0 8px 24px rgba(11, 22, 19, 0.04);
+            padding: 34px 40px;
+        }
+
+        .pa-card-head {
+            padding-bottom: 20px;
+            margin-bottom: 26px;
+            border-bottom: 1px solid #eef1f0;
+        }
+
+        .pa-card-eyebrow {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .pa-card-head h1 {
+            font-size: 23px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0 0 6px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .pa-card-head p {
+            font-size: 13.5px;
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        .pa-alert {
+            background: #e8f5f1;
+            border: 1px solid #bfe3d7;
+            color: var(--primary-color);
+            padding: 13px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .pa-alert i {
+                color: var(--secondary-color);
+                font-size: 16px;
+            }
+
+        .pa-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pa-field {
+            margin-bottom: 20px;
+        }
+
+        .pa-row-2 .pa-field {
+            margin-bottom: 0;
+        }
+
+        .pa-field label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .pa-badge-lock {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-gray);
+            background: #f1f3f2;
+            padding: 3px 9px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pa-input-box {
+            position: relative;
+        }
+
+            .pa-input-box .pa-field-icon {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #8b9693;
+                font-size: 14px;
+                pointer-events: none;
+                transition: color 0.2s ease;
+            }
+
+            .pa-input-box.textarea-box .pa-field-icon {
+                top: 15px;
+                transform: none;
+            }
+
+        .pa-control {
+            width: 100%;
+            height: 44px;
+            padding: 10px 14px 10px 42px;
+            border: 1px solid #dce3e1;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+            .pa-control:focus {
+                border-color: var(--secondary-color);
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(26, 143, 109, 0.12);
+            }
+
+        .pa-input-box:focus-within .pa-field-icon {
+            color: var(--secondary-color);
+        }
+
+        .pa-control[readonly] {
+            background: #f3f5f6;
+            color: #6c757d;
+            border-color: #e6eae8;
+            cursor: not-allowed;
+        }
+
+        textarea.pa-control {
+            height: auto;
+            min-height: 96px;
+            padding-top: 12px;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        .field-validation-valid {
+            display: none;
+        }
+
+        .field-validation-error,
+        .text-danger {
+            display: block;
+            color: #d93025;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 6px;
+        }
+
+        .pa-control.input-validation-error {
+            border-color: #d93025;
+            background: #fffafa;
+        }
+
+        .pa-form-footer {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid #eef1f0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .pa-btn-cancel {
+            padding: 11px 22px;
+            border-radius: 999px;
+            border: 1px solid #dce3e1;
+            background: #ffffff;
+            color: var(--text-dark);
+            font-size: 13.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+            .pa-btn-cancel:hover {
+                background: #f5faf8;
+                border-color: var(--secondary-color);
+                color: var(--primary-color);
+            }
+
+        .pa-btn-submit {
+            padding: 11px 28px;
+            border-radius: 999px;
+            border: none;
+            background: #141f1c;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+
+            .pa-btn-submit:hover {
+                background: var(--secondary-color);
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(26, 143, 109, 0.24);
+            }
+
+        /* ================= 4. SERVICE STRIP ================= */
+        .service-strip {
+            border-top: 1px solid #ecefef;
+            background: #fafcfb;
+            padding: 32px 0;
+            margin-top: auto;
+        }
+
+        .service-grid {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 32px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .service-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+            .service-box .srv-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+                background: #e8f5f1;
+                color: var(--secondary-color);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+            .service-box h4 {
+                margin: 0 0 3px 0;
+                font-size: 14.5px;
+                font-weight: 700;
+                color: var(--text-dark);
+            }
+
+            .service-box p {
+                margin: 0;
+                font-size: 12.5px;
+                color: var(--text-gray);
+            }
+
+        /* ================= 5. MULTI-COLUMN DARK FOOTER ================= */
+        .voltix-footer {
+            background-color: #0b1411;
+            color: #b7c4c0;
+            padding-top: 52px;
+        }
+
+        .footer-grid {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 32px 40px 32px;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr 1.2fr;
+            gap: 32px;
+        }
+
+        .footer-brand .logo {
+            color: #ffffff;
+            margin-bottom: 14px;
+        }
+
+        .footer-brand p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #93a39e;
+            margin: 0 0 20px 0;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+        }
+
+            .social-links a {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.08);
+                color: #ffffff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13.5px;
+                transition: background 0.2s;
+            }
+
+                .social-links a:hover {
+                    background: var(--secondary-color);
+                }
+
+        .footer-col h4 {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+            .footer-col ul a:hover {
+                color: #5eead4;
+            }
+
+        .app-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .app-badge-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+            .app-badge-btn:hover {
+                background: rgba(255,255,255,0.14);
+            }
+
+            .app-badge-btn i {
+                font-size: 18px;
+            }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 18px 0;
+            font-size: 12.5px;
+            color: #7f908b;
+        }
+
+            .footer-bottom .page-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+        .footer-legal {
+            display: flex;
+            gap: 18px;
+        }
+
+            .footer-legal a:hover {
+                color: #ffffff;
+            }
+
+        /* ================= RESPONSIVE ================= */
+        @@media (max-width: 1180px) {
+            .nav-links {
+                gap: 20px;
+            }
+
+            .search-bar {
+                width: 210px;
+            }
+        }
+
+        @@media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (max-width: 900px) {
+            .top-promo-bar,
+            .nav-links,
+            .search-bar {
+                display: none;
+            }
+
+            .page-container {
+                padding: 0 20px;
+            }
+
+            .pa-account-page {
+                padding: 24px 0 48px 0;
+            }
+
+            .pa-grid-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .pa-main-card {
+                padding: 24px 20px;
+            }
+
+            .pa-row-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .pa-form-footer {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .pa-btn-cancel,
+            .pa-btn-submit {
+                justify-content: center;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. TOP ANNOUNCEMENT BAR -->
+    <div class="top-promo-bar">
+        <div class="page-container">
+            <div class="promo-highlights">
+                <span>Miễn phí vận chuyển cho đơn từ 500.000đ</span>
+                <span class="sep">|</span>
+                <span>Đổi trả dễ dàng 30 ngày</span>
+                <span class="sep">|</span>
+                <span>Công nghệ chính hãng 100%</span>
+            </div>
+            <div class="promo-meta">
+                <span>VND <i class="fas fa-chevron-down" style="font-size:10px;"></i></span>
+                <span style="color:#4b5c57;">|</span>
+                <span>Tiếng Việt <i class="fas fa-chevron-down" style="font-size:10px;"></i></span>
+            </div>
+        </div>
     </div>
 
-    <div class="profile-body">
-        @if (ViewBag.Message != null)
-        {
-            <div class="alert-success">
-                <i class="fas fa-check-circle" style="margin-right: 5px;"></i> @ViewBag.Message
-            </div>
-        }
+    <!-- 2. MAIN HEADER -->
+    <header class="header-top">
+        <div class="page-container">
+            <a href="@Url.Action("Index", "Home")" class="logo">
+                <i class="fas fa-shopping-bag"></i> PHONE & ACCES
+            </a>
 
-        @using (Html.BeginForm("ProfileInfo", "Account", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.CustomerID)
+            <nav class="nav-links">
+                <a href="@Url.Action("Index", "Home")">Trang chủ</a>
+                <a href="@Url.Action("PageDienThoai", "Home")">Điện thoại</a>
+                <a href="@Url.Action("PagePhuKien", "Home")">Phụ kiện</a>
+                <a href="@Url.Action("PageThietBi", "Home")">Đồng hồ</a>
+                <a href="#footer">Hỗ trợ</a>
+            </nav>
 
-            <div class="form-group">
-                <label>Tên đăng nhập (Username):</label>
-                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @readonly = "readonly", style = "background-color: #e9ecef;" })
-            </div>
+            <div class="header-actions">
+                @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+                {
+                    <div class="search-bar">
+                        <i class="fas fa-search" style="color:#8b9693; font-size:13px;"></i>
+                        <input type="text" name="SearchTerm" placeholder="Tìm sản phẩm..." />
+                        <button type="submit" style="display:none;"></button>
+                    </div>
+                }
 
-            <div class="form-group">
-                <label>Họ và tên:</label>
-                @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", @placeholder = "Nhập họ và tên..." })
-                @Html.ValidationMessageFor(m => m.CustomerName, "", new { @class = "text-danger" })
-            </div>
+                @if (Session["Username"] != null)
+                {
+                    <div class="user-dropdown">
+                        <div class="user-trigger" onclick="this.parentElement.classList.toggle('open')">
+                            <i class="fas fa-user-circle" style="font-size: 17px;"></i>
+                            <span>@Session["Username"]</span>
+                            <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                        </div>
+                        <div class="user-dropdown-menu">
+                            <a href="@Url.Action("ProfileInfo", "Account")">Thông tin tài khoản</a>
+                            <a href="@Url.Action("MyOrder", "Order")">Đơn hàng của tôi</a>
+                            <a href="@Url.Action("Logout", "Account")" style="color: #d9534f;">Đăng xuất</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account")" class="icon-btn" title="Đăng nhập">
+                        <i class="far fa-user"></i>
+                    </a>
+                }
 
-            <div class="form-group">
-                <label>Số điện thoại:</label>
-                @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control", @placeholder = "Nhập số điện thoại..." })
-                @Html.ValidationMessageFor(m => m.CustomerPhone, "", new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                <label>Email:</label>
-                @Html.TextBoxFor(m => m.CustomerEmail, new { @class = "form-control", @placeholder = "Nhập địa chỉ email..." })
-                @Html.ValidationMessageFor(m => m.CustomerEmail, "", new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                <label>Địa chỉ giao hàng mặc định:</label>
-                @Html.TextAreaFor(m => m.CustomerAddress, new { @class = "form-control", @rows = 3, @placeholder = "Nhập địa chỉ nhận hàng..." })
-                @Html.ValidationMessageFor(m => m.CustomerAddress, "", new { @class = "text-danger" })
-            </div>
-
-            <div style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
-                <button type="submit" class="btn btn-save">
-                    <i class="fas fa-save" style="margin-right: 5px;"></i> Cập nhật thông tin
-                </button>
-                <a href="@Url.Action("Index", "Home")" class="btn btn-default" style="font-weight: 600;">
-                    ← Quay lại trang chủ
+                <a href="@Url.Action("Index", "Cart")" class="icon-btn" title="Giỏ hàng">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">@cartCount</span>
                 </a>
             </div>
-        }
+        </div>
+    </header>
+
+    <!-- 3. NỘI DUNG HỒ SƠ -->
+    <main class="pa-account-page">
+        <div class="page-container">
+            <div class="pa-breadcrumb">
+                <a href="@Url.Action("Index", "Home")"><i class="fas fa-home"></i> Trang chủ</a>
+                <span>/</span>
+                <span class="active">Thông tin tài khoản</span>
+            </div>
+
+            <div class="pa-grid-layout">
+                <!-- CỘT TRÁI: THẺ THÀNH VIÊN & MENU -->
+                <aside class="pa-sidebar-card">
+                    <div class="pa-sidebar-banner"></div>
+                    <div class="pa-sidebar-user">
+                        <div class="pa-avatar-circle">@avatarInitial</div>
+                        <h2 class="pa-user-name">@displayName</h2>
+                        <span class="pa-user-handle">@@@Model.Username</span>
+                    </div>
+
+                    <nav class="pa-nav-menu">
+                        <a href="@Url.Action("ProfileInfo", "Account")" class="pa-nav-item active">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Hồ sơ cá nhân</span>
+                        </a>
+                        <a href="@Url.Action("MyOrder", "Order")" class="pa-nav-item">
+                            <i class="fas fa-box-open"></i>
+                            <span>Đơn hàng của tôi</span>
+                        </a>
+                        <a href="@Url.Action("Index", "Cart")" class="pa-nav-item">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Giỏ hàng</span>
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="pa-nav-item">
+                            <i class="fas fa-store"></i>
+                            <span>Tiếp tục mua sắm</span>
+                        </a>
+                    </nav>
+                </aside>
+
+                <!-- CỘT PHẢI: FORM CẬP NHẬT -->
+                <section class="pa-main-card">
+                    <div class="pa-card-head">
+                        <span class="pa-card-eyebrow">Tài khoản của tôi</span>
+                        <h1>Hồ sơ của tôi</h1>
+                        <p>Cập nhật thông tin liên hệ và địa chỉ giao hàng mặc định để đặt hàng nhanh hơn</p>
+                    </div>
+
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="pa-alert">
+                            <i class="fas fa-check-circle"></i>
+                            <span>@ViewBag.Message</span>
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("ProfileInfo", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.CustomerID)
+
+                        <div class="pa-row-2">
+                            <div class="pa-field">
+                                <label>
+                                    <span>Tên đăng nhập</span>
+                                    <span class="pa-badge-lock"><i class="fas fa-lock"></i> Không thể đổi</span>
+                                </label>
+                                <div class="pa-input-box">
+                                    <i class="fas fa-at pa-field-icon"></i>
+                                    @Html.TextBoxFor(m => m.Username, new { @class = "pa-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+                            <div class="pa-field">
+                                <label>Họ và tên</label>
+                                <div class="pa-input-box">
+                                    <i class="fas fa-user pa-field-icon"></i>
+                                    @Html.TextBoxFor(m => m.CustomerName, new { @class = "pa-control", @placeholder = "Nhập họ và tên..." })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.CustomerName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="pa-row-2">
+                            <div class="pa-field">
+                                <label>Số điện thoại</label>
+                                <div class="pa-input-box">
+                                    <i class="fas fa-phone-alt pa-field-icon"></i>
+                                    @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "pa-control", @placeholder = "Nhập số điện thoại..." })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.CustomerPhone, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="pa-field">
+                                <label>Email</label>
+                                <div class="pa-input-box">
+                                    <i class="fas fa-envelope pa-field-icon"></i>
+                                    @Html.TextBoxFor(m => m.CustomerEmail, new { @class = "pa-control", @placeholder = "Nhập địa chỉ email..." })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.CustomerEmail, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="pa-field">
+                            <label>Địa chỉ giao hàng mặc định</label>
+                            <div class="pa-input-box textarea-box">
+                                <i class="fas fa-map-marker-alt pa-field-icon"></i>
+                                @Html.TextAreaFor(m => m.CustomerAddress, new { @class = "pa-control", @rows = 3, @placeholder = "Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..." })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.CustomerAddress, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="pa-form-footer">
+                            <a href="@Url.Action("Index", "Home")" class="pa-btn-cancel">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="pa-btn-submit">
+                                <i class="fas fa-check"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    }
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- 4. SERVICE STRIP -->
+    <div class="service-strip">
+        <div class="service-grid">
+            <div class="service-box">
+                <span class="srv-icon"><i class="fas fa-truck"></i></span>
+                <div>
+                    <h4>Miễn phí vận chuyển</h4>
+                    <p>Cho đơn hàng từ 500.000đ</p>
+                </div>
+            </div>
+
+            <div class="service-box">
+                <span class="srv-icon"><i class="fas fa-undo-alt"></i></span>
+                <div>
+                    <h4>Đổi trả 30 ngày</h4>
+                    <p>Bảo hành 1 đổi 1 dễ dàng</p>
+                </div>
+            </div>
+
+            <div class="service-box">
+                <span class="srv-icon"><i class="fas fa-headset"></i></span>
+                <div>
+                    <h4>Hỗ trợ 24/7</h4>
+                    <p>Tư vấn kỹ thuật tận tâm</p>
+                </div>
+            </div>
+
+            <div class="service-box">
+                <span class="srv-icon"><i class="fas fa-shield-alt"></i></span>
+                <div>
+                    <h4>Thanh toán bảo mật</h4>
+                    <p>Hỗ trợ PayPal & COD an toàn</p>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <!-- 5. MULTI-COLUMN DARK FOOTER -->
+    <footer class="voltix-footer" id="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="@Url.Action("Index", "Home")" class="logo">
+                    <i class="fas fa-shopping-bag"></i> PHONE & ACCES
+                </a>
+                <p>Hệ thống bán lẻ điện thoại thông minh, đồng hồ và phụ kiện công nghệ chính hãng hàng đầu dành cho bạn.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Danh mục</h4>
+                <ul>
+                    <li><a href="@Url.Action("PageDienThoai", "Home")">Điện thoại</a></li>
+                    <li><a href="@Url.Action("PagePhuKien", "Home")">Phụ kiện</a></li>
+                    <li><a href="@Url.Action("PageThietBi", "Home")">Đồng hồ thông minh</a></li>
+                    <li><a href="@Url.Action("Index", "Home")#featured">Sản phẩm nổi bật</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Về chúng tôi</h4>
+                <ul>
+                    <li><a href="#footer">Giới thiệu cửa hàng</a></li>
+                    <li><a href="#footer">Chính sách bảo hành</a></li>
+                    <li><a href="#footer">Tin tức công nghệ</a></li>
+                    <li><a href="#footer">Hệ thống chi nhánh</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Hỗ trợ khách hàng</h4>
+                <ul>
+                    <li><a href="@Url.Action("MyOrder", "Order")">Tra cứu đơn hàng</a></li>
+                    <li><a href="@Url.Action("ProfileInfo", "Account")">Tài khoản của tôi</a></li>
+                    <li><a href="#footer">Hướng dẫn thanh toán PayPal</a></li>
+                    <li><a href="#footer">Chính sách đổi trả</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Tải ứng dụng</h4>
+                <p style="font-size:12.5px; color:#93a39e; margin:0;">Trải nghiệm mua sắm tiện lợi hơn trên điện thoại.</p>
+                <div class="app-badges">
+                    <a href="#footer" class="app-badge-btn">
+                        <i class="fab fa-apple"></i>
+                        <span>Tải về trên <strong>App Store</strong></span>
+                    </a>
+                    <a href="#footer" class="app-badge-btn">
+                        <i class="fab fa-google-play"></i>
+                        <span>Tải về trên <strong>Google Play</strong></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="page-container">
+                <span>© 2026 PHONE & ACCES. All rights reserved.</span>
+                <div class="footer-legal">
+                    <a href="#footer">Chính sách bảo mật</a>
+                    <a href="#footer">Điều khoản dịch vụ</a>
+                    <a href="#footer">Sơ đồ trang</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT ĐÓNG MENU TÀI KHOẢN -->
+    <script>
+        document.addEventListener('click', function (e) {
+            const dropdown = document.querySelector('.user-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+    </script>
+
+</body>
+</html>
