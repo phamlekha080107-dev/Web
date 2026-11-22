@@ -103,14 +103,7 @@
                                         <i class="fas fa-eye"></i> Chi tiết
                                     </a>
 
-                                    <!-- Nút Xóa khách hàng -->
-                                    @using (Html.BeginForm("Delete", "Customers", new { area = "Admin", id = item.CustomerID }, FormMethod.Post, new { style = "display:inline;" }))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('CẢNH BÁO: Xóa khách hàng này sẽ xóa luôn toàn bộ Lịch sử mua hàng của họ. Bạn có chắc chắn muốn xóa không?');" title="Xóa tài khoản">
-                                            <i class="fas fa-trash-alt"></i> Xóa
-                                        </button>
-                                    }
+                                   
                                 </div>
                             </td>
                         </tr>
